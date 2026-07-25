@@ -15,7 +15,7 @@ async function main() {
   const pass = data.pass;
   const input = pass.input;
 
-  document.title = `${input.organizationName} · Carry`;
+  document.title = `${input.organizationName} · LogisPass`;
   title.textContent = input.eventName || input.discount || input.description;
   desc.textContent = `${input.organizationName} · ${input.style}`;
 

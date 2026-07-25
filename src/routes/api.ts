@@ -14,7 +14,7 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
   const router = Router();
 
   router.get("/health", (_req, res) => {
-    res.json({ ok: true, service: "wallet-pass" });
+    res.json({ ok: true, service: "logispass" });
   });
 
   router.get("/status", (_req, res) => {

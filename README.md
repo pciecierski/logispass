@@ -1,10 +1,10 @@
-# Carry — Wallet Pass Studio
+# LogisPass
 
-Create and serve **Apple Wallet** (`.pkpass`) and **Google Wallet** passes from one app.
+Issue **Apple Wallet** and **Google Wallet** passes for logistics parks and high-security restricted areas — create once, serve on iOS and Android.
 
 ## Features
 
-- Web studio to design generic, coupon, event ticket, store/loyalty, and boarding passes
+- Web studio to design generic, coupon, event ticket, store/loyalty, and boarding / access passes
 - Signed Apple Wallet packages when Pass Type ID + certificates are configured
 - Google Wallet “Save to Wallet” links when Issuer ID + service account are configured
 - Public pass pages with Add to Apple / Add to Google buttons

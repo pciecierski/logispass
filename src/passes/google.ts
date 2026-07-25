@@ -55,7 +55,7 @@ function buildGenericClass(config: AppConfig, style: CreatePassInput["style"]) {
   const id = classId(config, style);
   const base = {
     id,
-    issuerName: "Wallet Pass",
+    issuerName: "LogisPass",
     reviewStatus: "UNDER_REVIEW",
   };
 
@@ -65,7 +65,7 @@ function buildGenericClass(config: AppConfig, style: CreatePassInput["style"]) {
         ...base,
         reviewStatus: "UNDER_REVIEW",
         redemptionChannel: "BOTH",
-        provider: "Wallet Pass",
+        provider: "LogisPass",
       };
     case "eventTicket":
       return {

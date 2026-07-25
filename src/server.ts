@@ -42,7 +42,7 @@ app.get("/{*splat}", (req, res, next) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`Wallet Pass server listening on :${config.port}`);
+  console.log(`LogisPass server listening on :${config.port}`);
   console.log(`Public base URL: ${config.publicBaseUrl}`);
   console.log(
     `Apple Wallet: ${config.apple.enabled ? "enabled" : "needs certificates"} · Google Wallet: ${config.google.enabled ? "enabled" : "needs credentials"}`,
