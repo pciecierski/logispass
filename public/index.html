@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carry — Wallet Pass Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="/">Carry</a>
+      <nav>
+        <a href="#create">Create</a>
+        <a href="#passes">Passes</a>
+        <a href="#setup">Setup</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="brand-mark">Carry</p>
+          <h1>Passes that open on the phone they already trust.</h1>
+          <p class="lede">
+            Design once. Serve Apple Wallet and Google Wallet from the same link.
+          </p>
+          <div class="cta-row">
+            <a class="btn primary" href="#create">Create a pass</a>
+            <a class="btn ghost" href="#setup">Connect wallets</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="pass-stack">
+            <article class="phone-pass tilt-a">
+              <span class="pass-org">Harbor Market</span>
+              <strong>Member</strong>
+              <em>Balance $42.00</em>
+            </article>
+            <article class="phone-pass tilt-b">
+              <span class="pass-org">Night Orchard</span>
+              <strong>GA Ticket</strong>
+              <em>Gate B · 8:00 PM</em>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="create">
+        <div class="section-head">
+          <h2>Create</h2>
+          <p>Choose a style, fill the fields, and publish download links for both platforms.</p>
+        </div>
+
+        <form id="pass-form" class="pass-form">
+          <div class="field-grid">
+            <label>
+              Organization
+              <input name="organizationName" required maxlength="120" placeholder="Harbor Market" />
+            </label>
+            <label>
+              Description
+              <input name="description" required maxlength="200" placeholder="Loyalty membership card" />
+            </label>
+            <label>
+              Pass style
+              <select name="style">
+                <option value="generic">Generic</option>
+                <option value="coupon">Coupon</option>
+                <option value="eventTicket">Event ticket</option>
+                <option value="storeCard">Store / loyalty</option>
+                <option value="boardingPass">Boarding pass</option>
+              </select>
+            </label>
+            <label>
+              Platforms
+              <select name="platforms">
+                <option value="both">Apple + Google</option>
+                <option value="apple">Apple Wallet only</option>
+                <option value="google">Google Wallet only</option>
+              </select>
+            </label>
+            <label>
+              Logo text
+              <input name="logoText" maxlength="40" placeholder="Carry" />
+            </label>
+            <label>
+              Barcode message
+              <input name="barcodeMessage" maxlength="256" placeholder="Auto-uses serial if empty" />
+            </label>
+            <label>
+              Background
+              <input name="backgroundColor" type="color" value="#0B3D2E" />
+            </label>
+            <label>
+              Foreground
+              <input name="foregroundColor" type="color" value="#F4EFE6" />
+            </label>
+          </div>
+
+          <div class="style-extras" id="style-extras">
+            <label class="extra coupon-only">
+              Discount
+              <input name="discount" placeholder="20% off" />
+            </label>
+            <label class="extra event-only">
+              Event name
+              <input name="eventName" placeholder="Summer Solstice Show" />
+            </label>
+            <label class="extra event-only">
+              Venue
+              <input name="venue" placeholder="Orchard Hall" />
+            </label>
+            <label class="extra store-only">
+              Balance
+              <input name="balance" placeholder="$42.00" />
+            </label>
+            <label class="extra board-only">
+              Origin
+              <input name="origin" placeholder="SFO" />
+            </label>
+            <label class="extra board-only">
+              Destination
+              <input name="destination" placeholder="JFK" />
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn primary" id="submit-btn">Publish pass</button>
+            <p class="form-note" id="form-note" hidden></p>
+          </div>
+        </form>
+
+        <div class="result" id="result" hidden>
+          <h3>Pass ready</h3>
+          <p id="result-serial"></p>
+          <div class="result-links" id="result-links"></div>
+          <ul class="warnings" id="result-warnings"></ul>
+        </div>
+      </section>
+
+      <section class="panel" id="passes">
+        <div class="section-head">
+          <h2>Passes</h2>
+          <p>Recently published passes and their serve URLs.</p>
+        </div>
+        <div id="pass-list" class="pass-list"></div>
+      </section>
+
+      <section class="panel" id="setup">
+        <div class="section-head">
+          <h2>Setup</h2>
+          <p>Credentials stay on the server. The studio works in preview mode until wallets are connected.</p>
+        </div>
+        <div class="setup-grid" id="setup-status">
+          <div class="setup-block">
+            <h3>Apple Wallet</h3>
+            <p class="muted">Loading…</p>
+          </div>
+          <div class="setup-block">
+            <h3>Google Wallet</h3>
+            <p class="muted">Loading…</p>
+          </div>
+        </div>
+        <pre class="env-help" id="env-help"></pre>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Carry</span>
+      <span>Apple Wallet · Google Wallet</span>
+    </footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

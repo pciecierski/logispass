@@ -1,0 +1,82 @@
+export type PassStyle =
+  | "generic"
+  | "coupon"
+  | "eventTicket"
+  | "storeCard"
+  | "boardingPass";
+
+export type Platform = "apple" | "google" | "both";
+
+export interface PassField {
+  key: string;
+  label: string;
+  value: string;
+}
+
+export interface CreatePassInput {
+  organizationName: string;
+  description: string;
+  style: PassStyle;
+  platforms: Platform;
+  foregroundColor?: string;
+  backgroundColor?: string;
+  labelColor?: string;
+  logoText?: string;
+  headerFields?: PassField[];
+  primaryFields?: PassField[];
+  secondaryFields?: PassField[];
+  auxiliaryFields?: PassField[];
+  backFields?: PassField[];
+  barcodeMessage?: string;
+  barcodeFormat?: "QR" | "PDF417" | "Aztec" | "Code128";
+  relevantDate?: string;
+  // boarding pass
+  transitType?: "PKTransitTypeAir" | "PKTransitTypeTrain" | "PKTransitTypeBus" | "PKTransitTypeBoat" | "PKTransitTypeGeneric";
+  // coupon
+  discount?: string;
+  // event
+  venue?: string;
+  eventName?: string;
+  // store
+  balance?: string;
+  // recipient / metadata
+  serialPrefix?: string;
+}
+
+export interface StoredPass {
+  id: string;
+  serialNumber: string;
+  createdAt: string;
+  updatedAt: string;
+  input: CreatePassInput;
+  appleReady: boolean;
+  googleReady: boolean;
+  googleSaveUrl?: string;
+  appleDownloadPath: string;
+  googleSavePath: string;
+  statusPagePath: string;
+}
+
+export interface AppConfig {
+  port: number;
+  publicBaseUrl: string;
+  dataDir: string;
+  certsDir: string;
+  apple: {
+    enabled: boolean;
+    passTypeIdentifier?: string;
+    teamIdentifier?: string;
+    organizationName?: string;
+    wwdrPath?: string;
+    signerCertPath?: string;
+    signerKeyPath?: string;
+    signerKeyPassphrase?: string;
+  };
+  google: {
+    enabled: boolean;
+    issuerId?: string;
+    serviceAccountEmail?: string;
+    serviceAccountKey?: string;
+    classSuffix?: string;
+  };
+}
