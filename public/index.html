@@ -55,7 +55,7 @@
       <section class="panel" id="create">
         <div class="section-head">
           <h2>Create</h2>
-          <p>Choose a style, fill the fields, and publish download links for both platforms.</p>
+          <p>Choose a style, fill the fields, and publish — optionally SMS the pass page link to the recipient.</p>
         </div>
 
         <form id="pass-form" class="pass-form">
@@ -93,6 +93,20 @@
             <label>
               Barcode message
               <input name="barcodeMessage" maxlength="256" placeholder="Auto-uses serial if empty" />
+            </label>
+            <label>
+              Recipient phone (SMS)
+              <input
+                name="recipientPhone"
+                type="tel"
+                maxlength="20"
+                autocomplete="tel"
+                placeholder="+48123456789"
+              />
+            </label>
+            <label class="checkbox-label">
+              <input name="sendSms" type="checkbox" value="1" checked />
+              Send pass link by SMS
             </label>
             <label>
               Background

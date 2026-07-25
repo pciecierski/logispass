@@ -8,6 +8,7 @@ Issue **Apple Wallet** and **Google Wallet** passes for logistics parks and high
 - Signed Apple Wallet packages when Pass Type ID + certificates are configured
 - Google Wallet “Save to Wallet” links when Issuer ID + service account are configured
 - Public pass pages with Add to Apple / Add to Google buttons
+- Optional SMS delivery of the pass page link (Twilio or SMSAPI)
 - Preview mode when credentials are missing (pass JSON still generated)
 
 ## Quick start
@@ -50,13 +51,43 @@ GOOGLE_ISSUER_ID=3388xxxxxxxx
 GOOGLE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'
 ```
 
+## SMS setup
+
+When creating a pass, set `recipientPhone` (E.164 like `+48123456789`, or a 9-digit PL number). The server texts the public pass page URL (`/p/:id`) so the recipient can add Apple or Google Wallet from one link.
+
+### Twilio
+
+```bash
+SMS_PROVIDER=twilio
+TWILIO_ACCOUNT_SID=ACxxxxxxxx
+TWILIO_AUTH_TOKEN=xxxxxxxx
+TWILIO_FROM_NUMBER=+15551234567
+```
+
+### SMSAPI (Poland)
+
+```bash
+SMS_PROVIDER=smsapi
+SMSAPI_TOKEN=xxxxxxxx
+SMSAPI_FROM=LogisPass
+```
+
+Optional template (placeholders `{{org}}` and `{{url}}`):
+
+```bash
+SMS_MESSAGE_TEMPLATE=LogisPass: Your pass from {{org}} — open {{url}}
+```
+
+For local testing without a real gateway: `SMS_PROVIDER=log` (message is printed to the server log).
+
 ## API
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/api/status` | Credential status |
+| `GET` | `/api/status` | Credential status (Apple, Google, SMS) |
 | `GET` | `/api/passes` | List passes |
-| `POST` | `/api/passes` | Create a pass |
+| `POST` | `/api/passes` | Create a pass (`recipientPhone`, `sendSms` optional) |
+| `POST` | `/api/passes/:id/sms` | Send / resend pass page link by SMS |
 | `GET` | `/api/passes/:id` | Pass metadata + URLs |
 | `GET` | `/api/passes/:id/apple.pkpass` | Download Apple pass |
 | `GET` | `/api/passes/:id/google?redirect=1` | Redirect to Google save URL |

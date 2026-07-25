@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { AppConfig } from "./types.js";
+import type { AppConfig, SmsProvider } from "./types.js";
 
 function truthy(value: string | undefined): boolean {
   if (!value) return false;
@@ -52,6 +52,13 @@ export function loadConfig(): AppConfig {
     "",
   );
 
+  const smsProviderRaw = (process.env.SMS_PROVIDER || "none").toLowerCase();
+  const smsProvider: SmsProvider = (
+    ["none", "twilio", "smsapi", "log"] as const
+  ).includes(smsProviderRaw as SmsProvider)
+    ? (smsProviderRaw as SmsProvider)
+    : "none";
+
   fs.mkdirSync(dataDir, { recursive: true });
   fs.mkdirSync(certsDir, { recursive: true });
   fs.mkdirSync(path.join(dataDir, "passes"), { recursive: true });
@@ -77,6 +84,15 @@ export function loadConfig(): AppConfig {
       serviceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       serviceAccountKey: googleKey,
       classSuffix: process.env.GOOGLE_CLASS_SUFFIX || "walletpass",
+    },
+    sms: {
+      provider: smsProvider,
+      messageTemplate: process.env.SMS_MESSAGE_TEMPLATE,
+      twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
+      twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+      twilioFromNumber: process.env.TWILIO_FROM_NUMBER,
+      smsapiToken: process.env.SMSAPI_TOKEN,
+      smsapiFrom: process.env.SMSAPI_FROM,
     },
   };
 }

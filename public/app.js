@@ -54,10 +54,47 @@ function renderResult(payload) {
     linkButton(payload.urls.apple, "Apple .pkpass"),
     linkButton(`${payload.urls.google}?redirect=1`, "Google Wallet"),
   );
+
+  if (payload.pass.input.recipientPhone || payload.sms) {
+    const smsBtn = document.createElement("button");
+    smsBtn.type = "button";
+    smsBtn.className = "btn secondary";
+    smsBtn.textContent = payload.sms?.sent
+      ? `SMS sent to ${payload.sms.to}`
+      : "Send SMS link";
+    if (payload.sms?.sent) smsBtn.disabled = true;
+    smsBtn.addEventListener("click", async () => {
+      smsBtn.disabled = true;
+      smsBtn.textContent = "Sending…";
+      try {
+        const resend = await api(`/api/passes/${payload.pass.id}/sms`, {
+          method: "POST",
+          body: JSON.stringify({
+            phone: payload.pass.input.recipientPhone || undefined,
+          }),
+        });
+        smsBtn.textContent = `SMS sent to ${resend.sms.to}`;
+      } catch (err) {
+        smsBtn.disabled = false;
+        smsBtn.textContent = "Send SMS link";
+        const li = document.createElement("li");
+        li.textContent = `SMS: ${err.message}`;
+        resultWarnings.append(li);
+      }
+    });
+    resultLinks.append(smsBtn);
+  }
+
   resultWarnings.innerHTML = "";
   for (const warning of payload.warnings || []) {
     const li = document.createElement("li");
     li.textContent = warning;
+    resultWarnings.append(li);
+  }
+  if (payload.sms?.sent) {
+    const li = document.createElement("li");
+    li.className = "ok";
+    li.textContent = `SMS delivered via ${payload.sms.provider} to ${payload.sms.to}`;
     resultWarnings.append(li);
   }
   result.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -78,6 +115,8 @@ form.addEventListener("submit", async (event) => {
     platforms: String(fd.get("platforms") || "both"),
     logoText: String(fd.get("logoText") || "").trim() || undefined,
     barcodeMessage: String(fd.get("barcodeMessage") || "").trim() || undefined,
+    recipientPhone: String(fd.get("recipientPhone") || "").trim() || undefined,
+    sendSms: fd.get("sendSms") === "1",
     backgroundColor: String(fd.get("backgroundColor") || "#0B3D2E"),
     foregroundColor: String(fd.get("foregroundColor") || "#F4EFE6"),
     labelColor: "#C8B8A0",
@@ -142,6 +181,29 @@ async function loadPasses() {
       linkButton(pass.appleDownloadPath, "Apple"),
       linkButton(`${pass.googleSavePath}?redirect=1`, "Google"),
     );
+    if (pass.input.recipientPhone) {
+      const smsBtn = document.createElement("button");
+      smsBtn.type = "button";
+      smsBtn.className = "btn secondary";
+      smsBtn.textContent = "SMS";
+      smsBtn.title = `Send link to ${pass.input.recipientPhone}`;
+      smsBtn.addEventListener("click", async () => {
+        smsBtn.disabled = true;
+        smsBtn.textContent = "…";
+        try {
+          await api(`/api/passes/${pass.id}/sms`, {
+            method: "POST",
+            body: JSON.stringify({}),
+          });
+          smsBtn.textContent = "Sent";
+        } catch (err) {
+          smsBtn.disabled = false;
+          smsBtn.textContent = "SMS";
+          alert(err.message);
+        }
+      });
+      actions.append(smsBtn);
+    }
     row.append(actions);
     passList.append(row);
   }
@@ -180,6 +242,17 @@ async function loadStatus() {
           : `<p class="muted">Issuer ID: ${escapeHtml(status.google.issuerId || "—")}</p>`
       }
     </div>
+    <div class="setup-block">
+      <h3>SMS</h3>
+      <p class="${status.sms?.configured ? "ok" : "bad"}">
+        ${status.sms?.configured ? `Configured (${escapeHtml(status.sms.provider)})` : "Needs setup"}
+      </p>
+      ${
+        status.sms?.missing?.length
+          ? `<ul>${status.sms.missing.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}</ul>`
+          : `<p class="muted">Provider: ${escapeHtml(status.sms?.provider || "none")}</p>`
+      }
+    </div>
   `;
 
   envHelp.textContent = `PUBLIC_BASE_URL=${status.publicBaseUrl}
@@ -195,7 +268,18 @@ APPLE_ORG_NAME=Your Org
 # Google Wallet
 GOOGLE_ISSUER_ID=3388xxxxxxxx
 GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
-# or GOOGLE_SERVICE_ACCOUNT_KEY_PATH=/secrets/google.json`;
+# or GOOGLE_SERVICE_ACCOUNT_KEY_PATH=/secrets/google.json
+
+# SMS — Twilio or SMSAPI (PL)
+# SMS_PROVIDER=twilio
+# TWILIO_ACCOUNT_SID=
+# TWILIO_AUTH_TOKEN=
+# TWILIO_FROM_NUMBER=+1...
+# SMS_PROVIDER=smsapi
+# SMSAPI_TOKEN=
+# SMSAPI_FROM=LogisPass
+# SMS_MESSAGE_TEMPLATE=LogisPass: Your pass from {{org}} — open {{url}}
+# For local testing without a gateway: SMS_PROVIDER=log`;
 }
 
 loadPasses().catch(console.error);
