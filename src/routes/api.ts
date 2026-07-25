@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import fs from "node:fs";
-import type { AppConfig } from "../types.js";
+import { z } from "zod";
+import type { AppConfig, CreatePassInput } from "../types.js";
 import { PassStore } from "../passes/store.js";
 import { createPassSchema } from "../lib/schema.js";
 import { appleStatus, buildApplePass, writeApplePreview } from "../passes/apple.js";
@@ -9,6 +10,8 @@ import {
   demoGoogleInstructions,
   googleStatus,
 } from "../passes/google.js";
+import { normalizePhone } from "../lib/phone.js";
+import { sendPassSms, smsStatus } from "../lib/sms.js";
 
 export function createApiRouter(config: AppConfig, store: PassStore): Router {
   const router = Router();
@@ -20,6 +23,7 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
   router.get("/status", (_req, res) => {
     const apple = appleStatus(config);
     const google = googleStatus(config);
+    const sms = smsStatus(config);
     res.json({
       publicBaseUrl: config.publicBaseUrl,
       apple: {
@@ -33,6 +37,12 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         configured: google.configured,
         missing: google.missing,
         issuerId: config.google.issuerId || null,
+      },
+      sms: {
+        enabled: config.sms.provider !== "none",
+        configured: sms.configured,
+        provider: sms.provider,
+        missing: sms.missing,
       },
     });
   });
@@ -65,7 +75,20 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         return;
       }
 
-      const input = parsed.data;
+      const { sendSms: sendSmsFlag, ...rest } = parsed.data;
+      let recipientPhone = rest.recipientPhone?.trim() || undefined;
+      if (recipientPhone) {
+        try {
+          recipientPhone = normalizePhone(recipientPhone);
+        } catch (err) {
+          res.status(400).json({ error: (err as Error).message });
+          return;
+        }
+      }
+      const input: CreatePassInput = {
+        ...rest,
+        recipientPhone,
+      };
       const stored = store.create(input, config.publicBaseUrl);
       const dir = store.passDir(stored.id);
 
@@ -124,19 +147,91 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         googleSaveUrl,
       });
 
+      const pageUrl = `${config.publicBaseUrl}${updated.statusPagePath}`;
+      const urls = {
+        page: pageUrl,
+        apple: `${config.publicBaseUrl}${updated.appleDownloadPath}`,
+        google: `${config.publicBaseUrl}${updated.googleSavePath}`,
+      };
+
+      let sms = undefined as Awaited<ReturnType<typeof sendPassSms>> | undefined;
+      const shouldSendSms =
+        Boolean(recipientPhone) && (sendSmsFlag === undefined ? true : sendSmsFlag);
+      if (shouldSendSms && recipientPhone) {
+        sms = await sendPassSms(config, {
+          to: recipientPhone,
+          organizationName: input.organizationName,
+          pageUrl,
+        });
+        if (!sms.sent && sms.error) {
+          errors.push(`SMS: ${sms.error}`);
+        }
+      }
+
       res.status(201).json({
         pass: updated,
-        urls: {
-          page: `${config.publicBaseUrl}${updated.statusPagePath}`,
-          apple: `${config.publicBaseUrl}${updated.appleDownloadPath}`,
-          google: `${config.publicBaseUrl}${updated.googleSavePath}`,
-        },
+        urls,
+        sms,
         warnings: errors,
       });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: (err as Error).message });
     }
+  });
+
+  const sendSmsBodySchema = z.object({
+    phone: z.string().min(9).max(20).optional(),
+  });
+
+  router.post("/passes/:id/sms", async (req, res) => {
+    const pass = store.get(req.params.id);
+    if (!pass) {
+      res.status(404).json({ error: "Pass not found" });
+      return;
+    }
+
+    const parsed = sendSmsBodySchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid SMS payload", details: parsed.error.flatten() });
+      return;
+    }
+
+    const phone = parsed.data.phone?.trim() || pass.input.recipientPhone;
+    if (!phone) {
+      res.status(400).json({
+        error: "No recipient phone. Pass phone in the body or set recipientPhone when creating the pass.",
+      });
+      return;
+    }
+
+    let normalized: string;
+    try {
+      normalized = normalizePhone(phone);
+    } catch (err) {
+      res.status(400).json({ error: (err as Error).message });
+      return;
+    }
+
+    if (normalized !== pass.input.recipientPhone) {
+      store.update(pass.id, {
+        input: { ...pass.input, recipientPhone: normalized },
+      });
+    }
+
+    const pageUrl = `${config.publicBaseUrl}${pass.statusPagePath}`;
+    const sms = await sendPassSms(config, {
+      to: normalized,
+      organizationName: pass.input.organizationName,
+      pageUrl,
+    });
+
+    if (!sms.sent) {
+      res.status(502).json({ error: sms.error || "Failed to send SMS", sms });
+      return;
+    }
+
+    res.json({ ok: true, sms, url: pageUrl });
   });
 
   router.get("/passes/:id/apple.pkpass", async (req, res) => {

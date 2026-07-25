@@ -41,6 +41,17 @@ export interface CreatePassInput {
   balance?: string;
   // recipient / metadata
   serialPrefix?: string;
+  /** Recipient phone (E.164 or PL national). When set, pass page link is SMS'd. */
+  recipientPhone?: string;
+}
+
+export type SmsProvider = "none" | "twilio" | "smsapi" | "log";
+
+export interface SmsDeliveryResult {
+  sent: boolean;
+  provider: SmsProvider;
+  to?: string;
+  error?: string;
 }
 
 export interface StoredPass {
@@ -78,5 +89,14 @@ export interface AppConfig {
     serviceAccountEmail?: string;
     serviceAccountKey?: string;
     classSuffix?: string;
+  };
+  sms: {
+    provider: SmsProvider;
+    messageTemplate?: string;
+    twilioAccountSid?: string;
+    twilioAuthToken?: string;
+    twilioFromNumber?: string;
+    smsapiToken?: string;
+    smsapiFrom?: string;
   };
 }

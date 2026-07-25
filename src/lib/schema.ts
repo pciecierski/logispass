@@ -37,6 +37,9 @@ export const createPassSchema = z.object({
   eventName: z.string().max(120).optional(),
   balance: z.string().max(64).optional(),
   serialPrefix: z.string().max(12).optional(),
+  recipientPhone: z.string().min(9).max(20).optional(),
+  /** When true (default if recipientPhone set), send SMS with the public pass page link. */
+  sendSms: z.boolean().optional(),
 });
 
 export type CreatePassBody = z.infer<typeof createPassSchema>;
