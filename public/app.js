@@ -1,3 +1,5 @@
+import { initI18n, onLocaleChange, t, getLocale } from "./i18n.js";
+
 const form = document.getElementById("pass-form");
 const extras = document.getElementById("style-extras");
 const styleSelect = form.querySelector('[name="style"]');
@@ -10,6 +12,15 @@ const submitBtn = document.getElementById("submit-btn");
 const passList = document.getElementById("pass-list");
 const setupStatus = document.getElementById("setup-status");
 const envHelp = document.getElementById("env-help");
+
+/** @type {unknown} */
+let lastStatus = null;
+/** @type {unknown} */
+let lastPasses = null;
+/** @type {unknown} */
+let lastResult = null;
+
+initI18n();
 
 function syncExtras() {
   extras.className = `style-extras show-${styleSelect.value}`;
@@ -31,7 +42,7 @@ async function api(path, options) {
     data = { raw: text };
   }
   if (!res.ok) {
-    throw new Error(data?.error || res.statusText || "Request failed");
+    throw new Error(data?.error || res.statusText || t("common.requestFailed"));
   }
   return data;
 }
@@ -46,12 +57,13 @@ function linkButton(href, label, className = "btn secondary") {
 }
 
 function renderResult(payload) {
+  lastResult = payload;
   result.hidden = false;
   resultSerial.textContent = `${payload.pass.serialNumber} · ${payload.pass.input.style} · Google Wallet`;
   resultLinks.innerHTML = "";
   resultLinks.append(
-    linkButton(payload.urls.page, "Open pass page", "btn primary"),
-    linkButton(`${payload.urls.google}?redirect=1`, "Google Wallet"),
+    linkButton(payload.urls.page, t("result.openPage"), "btn primary"),
+    linkButton(`${payload.urls.google}?redirect=1`, t("result.google")),
   );
 
   if (payload.pass.input.recipientPhone || payload.sms) {
@@ -59,12 +71,12 @@ function renderResult(payload) {
     smsBtn.type = "button";
     smsBtn.className = "btn secondary";
     smsBtn.textContent = payload.sms?.sent
-      ? `SMS sent to ${payload.sms.to}`
-      : "Send SMS link";
+      ? t("result.smsSent", { to: payload.sms.to })
+      : t("result.sendSms");
     if (payload.sms?.sent) smsBtn.disabled = true;
     smsBtn.addEventListener("click", async () => {
       smsBtn.disabled = true;
-      smsBtn.textContent = "Sending…";
+      smsBtn.textContent = t("result.smsSending");
       try {
         const resend = await api(`/api/passes/${payload.pass.id}/sms`, {
           method: "POST",
@@ -72,10 +84,11 @@ function renderResult(payload) {
             phone: payload.pass.input.recipientPhone || undefined,
           }),
         });
-        smsBtn.textContent = `SMS sent to ${resend.sms.to}`;
+        lastResult = { ...payload, sms: resend.sms };
+        smsBtn.textContent = t("result.smsSent", { to: resend.sms.to });
       } catch (err) {
         smsBtn.disabled = false;
-        smsBtn.textContent = "Send SMS link";
+        smsBtn.textContent = t("result.sendSms");
         const li = document.createElement("li");
         li.textContent = `SMS: ${err.message}`;
         resultWarnings.append(li);
@@ -93,7 +106,10 @@ function renderResult(payload) {
   if (payload.sms?.sent) {
     const li = document.createElement("li");
     li.className = "ok";
-    li.textContent = `SMS delivered via ${payload.sms.provider} to ${payload.sms.to}`;
+    li.textContent = t("result.smsDelivered", {
+      provider: payload.sms.provider,
+      to: payload.sms.to,
+    });
     resultWarnings.append(li);
   }
   result.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -103,7 +119,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   formNote.hidden = true;
   submitBtn.disabled = true;
-  submitBtn.textContent = "Publishing…";
+  submitBtn.textContent = t("form.publishing");
 
   const fd = new FormData(form);
   const style = String(fd.get("style"));
@@ -153,38 +169,44 @@ form.addEventListener("submit", async (event) => {
     formNote.textContent = err.message;
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = "Publish pass";
+    submitBtn.textContent = t("form.submit");
   }
 });
 
 async function loadPasses() {
   const data = await api("/api/passes");
+  lastPasses = data;
+  renderPasses(data);
+}
+
+function renderPasses(data) {
   passList.innerHTML = "";
   if (!data.passes?.length) {
-    passList.innerHTML = `<p class="muted">No passes yet. Create one above.</p>`;
+    passList.innerHTML = `<p class="muted">${escapeHtml(t("passes.empty"))}</p>`;
     return;
   }
+  const locale = getLocale() === "pl" ? "pl-PL" : "en-GB";
   for (const pass of data.passes) {
     const row = document.createElement("div");
     row.className = "pass-row";
     row.innerHTML = `
       <div>
         <h3>${escapeHtml(pass.input.organizationName)} · ${escapeHtml(pass.input.style)}</h3>
-        <p>${escapeHtml(pass.serialNumber)} · ${new Date(pass.createdAt).toLocaleString()}</p>
+        <p>${escapeHtml(pass.serialNumber)} · ${new Date(pass.createdAt).toLocaleString(locale)}</p>
       </div>
     `;
     const actions = document.createElement("div");
     actions.className = "pass-row-actions";
     actions.append(
-      linkButton(pass.statusPagePath, "Open"),
-      linkButton(`${pass.googleSavePath}?redirect=1`, "Google"),
+      linkButton(pass.statusPagePath, t("passes.open")),
+      linkButton(`${pass.googleSavePath}?redirect=1`, t("passes.google")),
     );
     if (pass.input.recipientPhone) {
       const smsBtn = document.createElement("button");
       smsBtn.type = "button";
       smsBtn.className = "btn secondary";
-      smsBtn.textContent = "SMS";
-      smsBtn.title = `Send link to ${pass.input.recipientPhone}`;
+      smsBtn.textContent = t("passes.sms");
+      smsBtn.title = t("passes.smsTitle", { phone: pass.input.recipientPhone });
       smsBtn.addEventListener("click", async () => {
         smsBtn.disabled = true;
         smsBtn.textContent = "…";
@@ -193,10 +215,10 @@ async function loadPasses() {
             method: "POST",
             body: JSON.stringify({}),
           });
-          smsBtn.textContent = "Sent";
+          smsBtn.textContent = t("passes.smsSent");
         } catch (err) {
           smsBtn.disabled = false;
-          smsBtn.textContent = "SMS";
+          smsBtn.textContent = t("passes.sms");
           alert(err.message);
         }
       });
@@ -217,26 +239,33 @@ function escapeHtml(value) {
 
 async function loadStatus() {
   const status = await api("/api/status");
+  lastStatus = status;
+  renderStatus(status);
+}
+
+function renderStatus(status) {
+  const storageHint = status.storage?.persistent
+    ? t("setup.storageHintPersistent")
+    : t("setup.storageHintEphemeral");
+
   setupStatus.innerHTML = `
     <div class="setup-block ${status.storage?.persistent ? "" : "coming-soon"}">
-      <h3>Storage</h3>
+      <h3>${escapeHtml(t("setup.storage"))}</h3>
       <p class="${status.storage?.persistent ? "ok" : "bad"}">
-        ${status.storage?.persistent ? "Persistent volume" : "Ephemeral (lost on deploy)"}
+        ${escapeHtml(status.storage?.persistent ? t("setup.storage.ok") : t("setup.storage.bad"))}
       </p>
-      <p class="muted">${escapeHtml(status.storage?.hint || "")}</p>
+      <p class="muted">${escapeHtml(storageHint)}</p>
       <p class="muted">DATA_DIR: ${escapeHtml(status.storage?.dataDir || "—")}</p>
     </div>
     <div class="setup-block coming-soon">
-      <h3>Apple Wallet</h3>
-      <p class="bad">Unavailable for now</p>
-      <p class="muted">
-        Apple Wallet configuration is unavailable for now and will be activated soon.
-      </p>
+      <h3>${escapeHtml(t("setup.apple"))}</h3>
+      <p class="bad">${escapeHtml(t("setup.apple.bad"))}</p>
+      <p class="muted">${escapeHtml(t("setup.apple.note"))}</p>
     </div>
     <div class="setup-block">
-      <h3>Google Wallet</h3>
+      <h3>${escapeHtml(t("setup.google"))}</h3>
       <p class="${status.google.configured ? "ok" : "bad"}">
-        ${status.google.configured ? "Configured" : "Needs setup"}
+        ${escapeHtml(status.google.configured ? t("setup.configured") : t("setup.needsSetup"))}
       </p>
       ${
         status.google.missing?.length
@@ -245,14 +274,18 @@ async function loadStatus() {
       }
     </div>
     <div class="setup-block">
-      <h3>SMS</h3>
+      <h3>${escapeHtml(t("setup.sms"))}</h3>
       <p class="${status.sms?.configured ? "ok" : "bad"}">
-        ${status.sms?.configured ? `Configured (${escapeHtml(status.sms.provider)})` : "Needs setup"}
+        ${
+          status.sms?.configured
+            ? escapeHtml(`${t("setup.configured")} (${status.sms.provider})`)
+            : escapeHtml(t("setup.needsSetup"))
+        }
       </p>
       ${
         status.sms?.missing?.length
           ? `<ul>${status.sms.missing.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}</ul>`
-          : `<p class="muted">Provider: ${escapeHtml(status.sms?.provider || "none")}</p>`
+          : `<p class="muted">${escapeHtml(t("setup.provider", { provider: status.sms?.provider || "none" }))}</p>`
       }
     </div>
   `;
@@ -285,6 +318,13 @@ GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 # SMS_MESSAGE_TEMPLATE=LogisPass: Your pass from {{org}} — open {{url}}
 # For local testing without a gateway: SMS_PROVIDER=log`;
 }
+
+onLocaleChange(() => {
+  if (lastStatus) renderStatus(lastStatus);
+  if (lastPasses) renderPasses(lastPasses);
+  if (lastResult) renderResult(lastResult);
+  if (!submitBtn.disabled) submitBtn.textContent = t("form.submit");
+});
 
 loadPasses().catch(console.error);
 loadStatus().catch(console.error);
