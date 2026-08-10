@@ -88,8 +88,16 @@ const messages = {
     "pass.notFound": "Pass not found",
     "pass.loadError": "Could not load pass",
     "pass.addGoogle": "Add to Google Wallet",
+    "pass.addApple": "Add to Apple Wallet",
     "pass.appleNote":
       "Apple Wallet is unavailable for now and will be activated soon. Use Google Wallet to save this pass.",
+    "pass.device.ios": "iPhone detected — Apple Wallet is recommended for this device.",
+    "pass.device.iosAppleSoon":
+      "iPhone detected. Apple Wallet will be activated soon — save with Google Wallet for now.",
+    "pass.device.android": "Android detected — Google Wallet is recommended for this device.",
+    "pass.device.other": "Choose a wallet for your device.",
+    "pass.alt.google": "Prefer Google Wallet instead?",
+    "pass.alt.apple": "Prefer Apple Wallet instead?",
     "pass.metaLine": "Serial {{serial}} · Google {{google}} · Apple coming soon",
     "pass.ready": "ready",
     "pass.preview": "preview",
@@ -180,8 +188,16 @@ const messages = {
     "pass.notFound": "Nie znaleziono przepustki",
     "pass.loadError": "Nie udało się wczytać przepustki",
     "pass.addGoogle": "Dodaj do Google Wallet",
+    "pass.addApple": "Dodaj do Apple Wallet",
     "pass.appleNote":
       "Apple Wallet jest na razie niedostępny i zostanie aktywowany wkrótce. Zapisz przepustkę w Google Wallet.",
+    "pass.device.ios": "Wykryto iPhone — dla tego urządzenia rekomendujemy Apple Wallet.",
+    "pass.device.iosAppleSoon":
+      "Wykryto iPhone. Apple Wallet uruchomimy wkrótce — na razie zapisz w Google Wallet.",
+    "pass.device.android": "Wykryto Androida — dla tego urządzenia rekomendujemy Google Wallet.",
+    "pass.device.other": "Wybierz wallet dopasowany do swojego urządzenia.",
+    "pass.alt.google": "Wolisz Google Wallet?",
+    "pass.alt.apple": "Wolisz Apple Wallet?",
     "pass.metaLine": "Numer {{serial}} · Google {{google}} · Apple wkrótce",
     "pass.ready": "gotowy",
     "pass.preview": "podgląd",
