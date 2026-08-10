@@ -54,6 +54,9 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         configured: google.configured,
         missing: google.missing,
         issuerId: config.google.issuerId || null,
+        heroImageUrl: config.google.heroImageUrl || null,
+        logoImageUrl: config.google.logoImageUrl || null,
+        defaultHeroImageUrl: `${config.publicBaseUrl}/wallet-assets/logistics-park-gate-hero.png`,
       },
       platforms: {
         create: WALLET_FEATURES.appleEnabled ? ("both" as const) : ("google" as const),

@@ -127,6 +127,8 @@ export function loadConfig(): AppConfig {
       serviceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       serviceAccountKey: googleKey,
       classSuffix: process.env.GOOGLE_CLASS_SUFFIX || "walletpass",
+      heroImageUrl: process.env.GOOGLE_HERO_IMAGE_URL,
+      logoImageUrl: process.env.GOOGLE_LOGO_IMAGE_URL,
     },
     sms: {
       provider: smsProvider,
