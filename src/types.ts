@@ -95,6 +95,10 @@ export interface AppConfig {
     serviceAccountEmail?: string;
     serviceAccountKey?: string;
     classSuffix?: string;
+    /** HTTPS URL for Generic/object hero banner (or override). */
+    heroImageUrl?: string;
+    /** HTTPS URL for pass logo (or override). */
+    logoImageUrl?: string;
   };
   sms: {
     provider: SmsProvider;

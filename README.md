@@ -53,6 +53,13 @@ GOOGLE_ISSUER_ID=3388xxxxxxxx
 GOOGLE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'
 ```
 
+Pass graphics: if the class already exists in Google Pay & Wallet Console, LogisPass **reuses its images** and does not overwrite the class. For Generic passes, `heroImage` / `logo` are copied onto each object (required by the API). Optional overrides:
+
+```bash
+GOOGLE_HERO_IMAGE_URL=https://your-domain/wallet-assets/logistics-park-gate-hero.png
+GOOGLE_LOGO_IMAGE_URL=https://your-domain/path/to/logo.png
+```
+
 ## SMS setup
 
 When creating a pass, set `recipientPhone` (E.164 like `+48123456789`, or a 9-digit PL number). The server texts the public pass page URL (`/p/:id`) so the recipient can add the pass to Google Wallet.
