@@ -12,6 +12,16 @@ function resolvePath(maybePath: string | undefined, fallback: string): string {
   return path.isAbsolute(maybePath) ? maybePath : path.resolve(process.cwd(), maybePath);
 }
 
+/** Ensure PUBLIC_BASE_URL is an absolute https URL (Google Wallet rejects relative image URIs). */
+export function normalizePublicBaseUrl(raw: string | undefined, port: number): string {
+  const fallback = `http://localhost:${port}`;
+  let value = (raw || fallback).trim().replace(/\/$/, "");
+  if (!/^https?:\/\//i.test(value)) {
+    value = `https://${value}`;
+  }
+  return value.replace(/\/$/, "");
+}
+
 function resolveDataDir(): {
   dataDir: string;
   persistent: boolean;
@@ -85,10 +95,7 @@ export function loadConfig(): AppConfig {
     (Boolean(process.env.GOOGLE_ISSUER_ID) && Boolean(googleKey));
 
   const port = Number(process.env.PORT || 3000);
-  const publicBaseUrl = (process.env.PUBLIC_BASE_URL || `http://localhost:${port}`).replace(
-    /\/$/,
-    "",
-  );
+  const publicBaseUrl = normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL, port);
 
   const smsProviderRaw = (process.env.SMS_PROVIDER || "none").toLowerCase();
   const smsProvider: SmsProvider = (
@@ -127,6 +134,7 @@ export function loadConfig(): AppConfig {
       serviceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       serviceAccountKey: googleKey,
       classSuffix: process.env.GOOGLE_CLASS_SUFFIX || "walletpass",
+      classId: process.env.GOOGLE_CLASS_ID,
       heroImageUrl: process.env.GOOGLE_HERO_IMAGE_URL,
       logoImageUrl: process.env.GOOGLE_LOGO_IMAGE_URL,
     },

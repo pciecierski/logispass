@@ -57,6 +57,12 @@ export function googleStatus(config: AppConfig): {
 }
 
 function classId(config: AppConfig, style: CreatePassInput["style"]): string {
+  if (config.google.classId?.trim()) {
+    const explicit = config.google.classId.trim();
+    // Allow either full "issuerId.suffix" or just the suffix.
+    if (explicit.includes(".")) return explicit;
+    return `${config.google.issuerId!}.${explicit}`;
+  }
   return `${config.google.issuerId!}.${config.google.classSuffix}_${style}`;
 }
 
@@ -85,6 +91,19 @@ function imageUri(image: WalletImage | undefined): string | undefined {
   return uri || undefined;
 }
 
+/** Google Wallet only accepts publicly reachable HTTPS image URIs (no relative hosts). */
+function absoluteHttpsUri(raw: string | undefined): string | undefined {
+  const value = raw?.trim();
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:") return undefined;
+    return url.toString();
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Resolve branding images for a pass object.
  * Priority: explicit env URLs → images already configured on the Wallet class →
@@ -100,22 +119,24 @@ function resolvePassImages(
   imageModulesData?: ClassResource["imageModulesData"];
 } {
   const classHero =
-    imageUri(classResource?.heroImage) ||
-    imageUri(classResource?.imageModulesData?.[0]?.mainImage);
+    absoluteHttpsUri(imageUri(classResource?.heroImage)) ||
+    absoluteHttpsUri(imageUri(classResource?.imageModulesData?.[0]?.mainImage));
   const classLogo =
-    imageUri(classResource?.logo) ||
-    imageUri(classResource?.programLogo) ||
-    imageUri(classResource?.wideLogo) ||
-    imageUri(classResource?.wideProgramLogo);
+    absoluteHttpsUri(imageUri(classResource?.logo)) ||
+    absoluteHttpsUri(imageUri(classResource?.programLogo)) ||
+    absoluteHttpsUri(imageUri(classResource?.wideLogo)) ||
+    absoluteHttpsUri(imageUri(classResource?.wideProgramLogo));
+
+  const defaultHero = absoluteHttpsUri(
+    `${config.publicBaseUrl}/wallet-assets/logistics-park-gate-hero.jpg`,
+  );
 
   const heroUri =
-    config.google.heroImageUrl?.trim() ||
+    absoluteHttpsUri(config.google.heroImageUrl) ||
     classHero ||
-    (style === "generic" || style === "boardingPass"
-      ? `${config.publicBaseUrl}/wallet-assets/logistics-park-gate-hero.png`
-      : undefined);
+    (style === "generic" || style === "boardingPass" ? defaultHero : undefined);
 
-  const logoUri = config.google.logoImageUrl?.trim() || classLogo;
+  const logoUri = absoluteHttpsUri(config.google.logoImageUrl) || classLogo;
 
   const result: {
     heroImage?: WalletImage;
@@ -505,6 +526,7 @@ export async function createGoogleSaveUrl(
     iss: sa.client_email,
     aud: "google",
     typ: "savetowallet",
+    origins: [config.publicBaseUrl],
     payload,
   };
 
