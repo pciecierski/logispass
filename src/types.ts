@@ -95,6 +95,8 @@ export interface AppConfig {
     serviceAccountEmail?: string;
     serviceAccountKey?: string;
     classSuffix?: string;
+    /** Full class id (`issuerId.suffix`) or suffix only — overrides style-based class id. */
+    classId?: string;
     /** HTTPS URL for Generic/object hero banner (or override). */
     heroImageUrl?: string;
     /** HTTPS URL for pass logo (or override). */

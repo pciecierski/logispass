@@ -110,6 +110,8 @@ railway domain
 railway variable set PUBLIC_BASE_URL=https://your-domain.up.railway.app
 ```
 
+`PUBLIC_BASE_URL` must include the scheme (`https://…`). A host-only value like `logispass.pl` breaks Google Wallet image URLs and Save-to-Wallet links.
+
 ### Persist passes across deploys (volume, no database)
 
 Passes are stored as files under `DATA_DIR` (default `/data` in production). Container disk is wiped on every deploy unless you attach a **Railway Volume**:

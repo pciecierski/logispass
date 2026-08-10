@@ -54,9 +54,10 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         configured: google.configured,
         missing: google.missing,
         issuerId: config.google.issuerId || null,
+        classId: config.google.classId || null,
         heroImageUrl: config.google.heroImageUrl || null,
         logoImageUrl: config.google.logoImageUrl || null,
-        defaultHeroImageUrl: `${config.publicBaseUrl}/wallet-assets/logistics-park-gate-hero.png`,
+        defaultHeroImageUrl: `${config.publicBaseUrl}/wallet-assets/logistics-park-gate-hero.jpg`,
       },
       platforms: {
         create: WALLET_FEATURES.appleEnabled ? ("both" as const) : ("google" as const),
@@ -330,15 +331,15 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
     }
 
     try {
-      let url = pass.googleSaveUrl;
-      if (!url) {
-        if (!googleStatus(config).configured) {
-          res.status(503).json(demoGoogleInstructions(pass));
-          return;
-        }
-        url = await createGoogleSaveUrl(config, pass);
-        store.update(pass.id, { googleReady: true, googleSaveUrl: url });
+      if (!googleStatus(config).configured) {
+        res.status(503).json(demoGoogleInstructions(pass));
+        return;
       }
+
+      // Always rebuild the Save URL so JWT reflects current PUBLIC_BASE_URL,
+      // class graphics, and image overrides (cached JWTs can go stale/broken).
+      const url = await createGoogleSaveUrl(config, pass);
+      store.update(pass.id, { googleReady: true, googleSaveUrl: url });
 
       if (req.query.redirect === "1" || req.query.redirect === "true") {
         res.redirect(url);
