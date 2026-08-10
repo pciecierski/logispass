@@ -27,10 +27,25 @@ app.use((req, res, next) => {
 app.use("/api", createApiRouter(config, store));
 
 const publicDir = path.join(__dirname, "..", "public");
-app.use(express.static(publicDir));
+
+/** Signal Polish as the primary language for HTML documents (SEO / crawlers). */
+function sendHtml(res: express.Response, file: string) {
+  res.setHeader("Content-Language", "pl");
+  res.sendFile(file);
+}
+
+app.use(
+  express.static(publicDir, {
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Content-Language", "pl");
+      }
+    },
+  }),
+);
 
 app.get("/p/:id", (_req, res) => {
-  res.sendFile(path.join(publicDir, "pass.html"));
+  sendHtml(res, path.join(publicDir, "pass.html"));
 });
 
 app.get("/{*splat}", (req, res, next) => {
@@ -38,7 +53,7 @@ app.get("/{*splat}", (req, res, next) => {
     next();
     return;
   }
-  res.sendFile(path.join(publicDir, "index.html"));
+  sendHtml(res, path.join(publicDir, "index.html"));
 });
 
 app.listen(config.port, () => {

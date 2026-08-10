@@ -219,8 +219,9 @@ function detectInitialLocale() {
   } catch {
     // ignore
   }
-  const nav = (navigator.language || "en").toLowerCase();
-  return nav.startsWith("pl") ? "pl" : "en";
+  // Polish is the site default (primary for Google indexing and first visit).
+  // English is opted into via the language switch.
+  return "pl";
 }
 
 /** @returns {Locale} */
@@ -233,8 +234,8 @@ export function getLocale() {
  * @param {Record<string, string | number>=} vars
  */
 export function t(key, vars) {
-  const table = messages[currentLocale] || messages.en;
-  let value = table[key] ?? messages.en[key] ?? key;
+  const table = messages[currentLocale] || messages.pl;
+  let value = table[key] ?? messages.pl[key] ?? messages.en[key] ?? key;
   if (vars) {
     for (const [name, raw] of Object.entries(vars)) {
       value = value.replaceAll(`{{${name}}}`, String(raw));
