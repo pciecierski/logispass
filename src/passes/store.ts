@@ -12,7 +12,7 @@ export class PassStore {
     this.passesDir = path.join(dataDir, "passes");
     fs.mkdirSync(this.passesDir, { recursive: true });
     if (!fs.existsSync(this.indexPath)) {
-      fs.writeFileSync(this.indexPath, "[]", "utf8");
+      this.writeJsonAtomic(this.indexPath, []);
     }
   }
 
@@ -47,7 +47,7 @@ export class PassStore {
     items.unshift(pass);
     this.writeAll(items);
     fs.mkdirSync(path.join(this.passesDir, id), { recursive: true });
-    fs.writeFileSync(path.join(this.passesDir, id, "input.json"), JSON.stringify(input, null, 2));
+    this.writeJsonAtomic(path.join(this.passesDir, id, "input.json"), input);
     return pass;
   }
 
@@ -74,6 +74,18 @@ export class PassStore {
   }
 
   private writeAll(items: StoredPass[]): void {
-    fs.writeFileSync(this.indexPath, JSON.stringify(items, null, 2), "utf8");
+    this.writeJsonAtomic(this.indexPath, items);
+  }
+
+  /** Write via temp file + rename so a crash mid-write cannot corrupt the index. */
+  private writeJsonAtomic(filePath: string, value: unknown): void {
+    const dir = path.dirname(filePath);
+    fs.mkdirSync(dir, { recursive: true });
+    const tmp = path.join(
+      dir,
+      `.${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`,
+    );
+    fs.writeFileSync(tmp, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+    fs.renameSync(tmp, filePath);
   }
 }

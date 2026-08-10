@@ -45,6 +45,9 @@ app.listen(config.port, () => {
   console.log(`LogisPass server listening on :${config.port}`);
   console.log(`Public base URL: ${config.publicBaseUrl}`);
   console.log(
+    `Storage: ${config.dataDir} (${config.storage.persistent ? "persistent volume" : "ephemeral — attach Railway volume at /data"})`,
+  );
+  console.log(
     `Google Wallet: ${config.google.enabled ? "enabled" : "needs credentials"} · Apple Wallet: coming soon`,
   );
 });

@@ -103,6 +103,26 @@ railway domain
 railway variable set PUBLIC_BASE_URL=https://your-domain.up.railway.app
 ```
 
+### Persist passes across deploys (volume, no database)
+
+Passes are stored as files under `DATA_DIR` (default `/data` in production). Container disk is wiped on every deploy unless you attach a **Railway Volume**:
+
+```bash
+# Attach a persistent volume to the LogisPass service at /data
+railway volume add --service <your-service-name> --mount-path /data
+```
+
+Or in the Railway dashboard: **Add volume → mount path `/data`**.
+
+The app auto-detects `RAILWAY_VOLUME_MOUNT_PATH`. Keep `DATA_DIR=/data` (Dockerfile default) so it matches the mount. After the volume is attached, redeploy once — new passes will survive future deploys.
+
+Check status in the studio Setup panel, or:
+
+```bash
+curl https://your-domain.up.railway.app/api/status
+# look for storage.persistent === true
+```
+
 Mount Apple PEMs under `/app/certs` or set the `APPLE_*_PATH` variables. Put the Google service account JSON in `GOOGLE_SERVICE_ACCOUNT_KEY`.
 
 ## Scripts

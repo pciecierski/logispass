@@ -30,6 +30,15 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
     const sms = smsStatus(config);
     res.json({
       publicBaseUrl: config.publicBaseUrl,
+      storage: {
+        backend: config.storage.backend,
+        dataDir: config.dataDir,
+        persistent: config.storage.persistent,
+        volumeMountPath: config.storage.volumeMountPath || null,
+        hint: config.storage.persistent
+          ? "Pass data is stored on a Railway volume and survives deploys."
+          : "Pass data is on ephemeral disk and will be lost on redeploy. Attach a Railway volume mounted at /data (or set DATA_DIR to the volume mount path).",
+      },
       apple: {
         enabled: false,
         available: WALLET_FEATURES.appleEnabled,
