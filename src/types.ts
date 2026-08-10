@@ -73,6 +73,12 @@ export interface AppConfig {
   publicBaseUrl: string;
   dataDir: string;
   certsDir: string;
+  storage: {
+    /** True when DATA_DIR lives on an attached Railway volume (survives deploys). */
+    persistent: boolean;
+    volumeMountPath?: string;
+    backend: "filesystem";
+  };
   apple: {
     enabled: boolean;
     passTypeIdentifier?: string;

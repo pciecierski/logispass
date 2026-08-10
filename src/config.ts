@@ -12,8 +12,46 @@ function resolvePath(maybePath: string | undefined, fallback: string): string {
   return path.isAbsolute(maybePath) ? maybePath : path.resolve(process.cwd(), maybePath);
 }
 
+function resolveDataDir(): {
+  dataDir: string;
+  persistent: boolean;
+  volumeMountPath?: string;
+} {
+  const volumeMountPath = process.env.RAILWAY_VOLUME_MOUNT_PATH?.trim() || undefined;
+
+  if (process.env.DATA_DIR?.trim()) {
+    const dataDir = resolvePath(process.env.DATA_DIR, path.join(process.cwd(), "data"));
+    const persistent = Boolean(
+      volumeMountPath &&
+        (dataDir === volumeMountPath || dataDir.startsWith(`${volumeMountPath}${path.sep}`)),
+    );
+    return { dataDir, persistent, volumeMountPath };
+  }
+
+  if (volumeMountPath) {
+    return {
+      dataDir: path.isAbsolute(volumeMountPath)
+        ? volumeMountPath
+        : path.resolve(process.cwd(), volumeMountPath),
+      persistent: true,
+      volumeMountPath,
+    };
+  }
+
+  // Production containers default to /data so a Railway volume can mount there.
+  if (process.env.NODE_ENV === "production") {
+    return { dataDir: "/data", persistent: false, volumeMountPath };
+  }
+
+  return {
+    dataDir: path.join(process.cwd(), "data"),
+    persistent: false,
+    volumeMountPath,
+  };
+}
+
 export function loadConfig(): AppConfig {
-  const dataDir = resolvePath(process.env.DATA_DIR, path.join(process.cwd(), "data"));
+  const { dataDir, persistent, volumeMountPath } = resolveDataDir();
   const certsDir = resolvePath(process.env.CERTS_DIR, path.join(process.cwd(), "certs"));
 
   const wwdrPath = process.env.APPLE_WWDR_CERT_PATH
@@ -68,6 +106,11 @@ export function loadConfig(): AppConfig {
     publicBaseUrl,
     dataDir,
     certsDir,
+    storage: {
+      persistent,
+      volumeMountPath,
+      backend: "filesystem",
+    },
     apple: {
       enabled: appleEnabled && appleCertsPresent && Boolean(process.env.APPLE_PASS_TYPE_ID),
       passTypeIdentifier: process.env.APPLE_PASS_TYPE_ID,

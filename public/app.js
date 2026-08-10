@@ -218,6 +218,14 @@ function escapeHtml(value) {
 async function loadStatus() {
   const status = await api("/api/status");
   setupStatus.innerHTML = `
+    <div class="setup-block ${status.storage?.persistent ? "" : "coming-soon"}">
+      <h3>Storage</h3>
+      <p class="${status.storage?.persistent ? "ok" : "bad"}">
+        ${status.storage?.persistent ? "Persistent volume" : "Ephemeral (lost on deploy)"}
+      </p>
+      <p class="muted">${escapeHtml(status.storage?.hint || "")}</p>
+      <p class="muted">DATA_DIR: ${escapeHtml(status.storage?.dataDir || "—")}</p>
+    </div>
     <div class="setup-block coming-soon">
       <h3>Apple Wallet</h3>
       <p class="bad">Unavailable for now</p>
@@ -250,6 +258,11 @@ async function loadStatus() {
   `;
 
   envHelp.textContent = `PUBLIC_BASE_URL=${status.publicBaseUrl}
+DATA_DIR=${status.storage?.dataDir || "/data"}
+
+# Persist passes on Railway (no database):
+# railway volume add --service <service> --mount-path /data
+# Keep DATA_DIR=/data so it matches the volume mount.
 
 # Google Wallet (active)
 GOOGLE_ISSUER_ID=3388xxxxxxxx
