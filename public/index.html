@@ -29,12 +29,17 @@
           <p class="brand-mark">LogisPass</p>
           <h1>Access passes for logistics parks and secure sites.</h1>
           <p class="lede">
-            Design once. Serve Apple Wallet and Google Wallet from the same link.
+            Design once. Issue Google Wallet passes for logistics parks and secure sites.
+            Apple Wallet will be activated soon.
           </p>
           <div class="cta-row">
-            <a class="btn primary" href="#create">Create a pass</a>
-            <a class="btn ghost" href="#setup">Connect wallets</a>
+            <a class="btn primary" href="#create">Create a Google Wallet pass</a>
+            <a class="btn ghost" href="#setup">Wallet status</a>
           </div>
+          <p class="availability-note" role="status">
+            Currently available: <strong>Google Wallet</strong>.
+            Apple Wallet configuration is unavailable for now and will be activated soon.
+          </p>
         </div>
         <div class="hero-visual" aria-hidden="true">
           <div class="pass-stack">
@@ -55,7 +60,10 @@
       <section class="panel" id="create">
         <div class="section-head">
           <h2>Create</h2>
-          <p>Choose a style, fill the fields, and publish — optionally SMS the pass page link to the recipient.</p>
+          <p>
+            Publish a Google Wallet pass. Optionally SMS the pass page link to the recipient.
+            Apple Wallet is not available yet.
+          </p>
         </div>
 
         <form id="pass-form" class="pass-form">
@@ -79,13 +87,14 @@
               </select>
             </label>
             <label>
-              Platforms
-              <select name="platforms">
-                <option value="both">Apple + Google</option>
-                <option value="apple">Apple Wallet only</option>
-                <option value="google">Google Wallet only</option>
+              Platform
+              <select name="platforms" disabled>
+                <option value="google" selected>Google Wallet only</option>
               </select>
             </label>
+            <p class="field-hint platform-hint">
+              Apple Wallet configuration is unavailable for now and will be activated soon.
+            </p>
             <label>
               Logo text
               <input name="logoText" maxlength="40" placeholder="LogisPass" />
@@ -170,7 +179,7 @@
       <section class="panel" id="setup">
         <div class="section-head">
           <h2>Setup</h2>
-          <p>Credentials stay on the server. The studio works in preview mode until wallets are connected.</p>
+          <p>Google Wallet credentials stay on the server. Apple Wallet setup is paused until activation.</p>
         </div>
         <div class="setup-grid" id="setup-status">
           <div class="setup-block">
@@ -188,7 +197,7 @@
 
     <footer class="site-footer">
       <span>LogisPass</span>
-      <span>Apple Wallet · Google Wallet</span>
+      <span>Google Wallet · Apple Wallet coming soon</span>
     </footer>
     <script type="module" src="/app.js"></script>
   </body>

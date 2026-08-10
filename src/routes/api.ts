@@ -12,6 +12,10 @@ import {
 } from "../passes/google.js";
 import { normalizePhone } from "../lib/phone.js";
 import { sendPassSms, smsStatus } from "../lib/sms.js";
+import {
+  APPLE_COMING_SOON_MESSAGE,
+  WALLET_FEATURES,
+} from "../lib/wallet-features.js";
 
 export function createApiRouter(config: AppConfig, store: PassStore): Router {
   const router = Router();
@@ -27,16 +31,25 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
     res.json({
       publicBaseUrl: config.publicBaseUrl,
       apple: {
-        enabled: config.apple.enabled,
-        configured: apple.configured,
+        enabled: false,
+        available: WALLET_FEATURES.appleEnabled,
+        comingSoon: !WALLET_FEATURES.appleEnabled,
+        message: APPLE_COMING_SOON_MESSAGE,
+        configured: false,
         missing: apple.missing,
         passTypeIdentifier: config.apple.passTypeIdentifier || null,
       },
       google: {
         enabled: config.google.enabled,
+        available: WALLET_FEATURES.googleEnabled,
         configured: google.configured,
         missing: google.missing,
         issuerId: config.google.issuerId || null,
+      },
+      platforms: {
+        create: WALLET_FEATURES.appleEnabled ? ("both" as const) : ("google" as const),
+        apple: WALLET_FEATURES.appleEnabled,
+        google: WALLET_FEATURES.googleEnabled,
       },
       sms: {
         enabled: config.sms.provider !== "none",
@@ -87,6 +100,7 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
       }
       const input: CreatePassInput = {
         ...rest,
+        platforms: "google",
         recipientPhone,
       };
       const stored = store.create(input, config.publicBaseUrl);
@@ -97,8 +111,11 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
       let googleSaveUrl: string | undefined;
       const errors: string[] = [];
 
-      const wantApple = input.platforms === "apple" || input.platforms === "both";
-      const wantGoogle = input.platforms === "google" || input.platforms === "both";
+      const wantApple =
+        WALLET_FEATURES.appleEnabled &&
+        (input.platforms === "apple" || input.platforms === "both");
+      const wantGoogle =
+        input.platforms === "google" || input.platforms === "both" || !WALLET_FEATURES.appleEnabled;
 
       if (wantApple) {
         try {
@@ -235,6 +252,14 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
   });
 
   router.get("/passes/:id/apple.pkpass", async (req, res) => {
+    if (!WALLET_FEATURES.appleEnabled) {
+      res.status(503).json({
+        error: APPLE_COMING_SOON_MESSAGE,
+        comingSoon: true,
+      });
+      return;
+    }
+
     const pass = store.get(req.params.id);
     if (!pass) {
       res.status(404).json({ error: "Pass not found" });

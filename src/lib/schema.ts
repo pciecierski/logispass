@@ -10,7 +10,11 @@ export const createPassSchema = z.object({
   organizationName: z.string().min(1).max(120),
   description: z.string().min(1).max(200),
   style: z.enum(["generic", "coupon", "eventTicket", "storeCard", "boardingPass"]),
-  platforms: z.enum(["apple", "google", "both"]).default("both"),
+  // Apple Wallet is temporarily unavailable — only Google passes can be created.
+  platforms: z
+    .enum(["apple", "google", "both"])
+    .default("google")
+    .transform(() => "google" as const),
   foregroundColor: z.string().optional(),
   backgroundColor: z.string().optional(),
   labelColor: z.string().optional(),

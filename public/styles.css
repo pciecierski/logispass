@@ -114,6 +114,46 @@ main,
   animation: rise 1s ease 0.16s both;
 }
 
+.availability-note {
+  margin: 1.25rem 0 0;
+  max-width: 42ch;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+}
+
+.availability-note strong {
+  color: var(--moss);
+  font-weight: 600;
+}
+
+.field-hint {
+  grid-column: 1 / -1;
+  margin: -0.35rem 0 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.platform-hint {
+  margin-top: -0.5rem;
+}
+
+select:disabled {
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.btn.disabled,
+a.btn.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.setup-block.coming-soon .bad {
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+
 .cta-row {
   display: flex;
   flex-wrap: wrap;

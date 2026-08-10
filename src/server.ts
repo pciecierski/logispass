@@ -45,6 +45,6 @@ app.listen(config.port, () => {
   console.log(`LogisPass server listening on :${config.port}`);
   console.log(`Public base URL: ${config.publicBaseUrl}`);
   console.log(
-    `Apple Wallet: ${config.apple.enabled ? "enabled" : "needs certificates"} · Google Wallet: ${config.google.enabled ? "enabled" : "needs credentials"}`,
+    `Google Wallet: ${config.google.enabled ? "enabled" : "needs credentials"} · Apple Wallet: coming soon`,
   );
 });

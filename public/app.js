@@ -47,11 +47,10 @@ function linkButton(href, label, className = "btn secondary") {
 
 function renderResult(payload) {
   result.hidden = false;
-  resultSerial.textContent = `${payload.pass.serialNumber} · ${payload.pass.input.style}`;
+  resultSerial.textContent = `${payload.pass.serialNumber} · ${payload.pass.input.style} · Google Wallet`;
   resultLinks.innerHTML = "";
   resultLinks.append(
     linkButton(payload.urls.page, "Open pass page", "btn primary"),
-    linkButton(payload.urls.apple, "Apple .pkpass"),
     linkButton(`${payload.urls.google}?redirect=1`, "Google Wallet"),
   );
 
@@ -112,7 +111,7 @@ form.addEventListener("submit", async (event) => {
     organizationName: String(fd.get("organizationName") || "").trim(),
     description: String(fd.get("description") || "").trim(),
     style,
-    platforms: String(fd.get("platforms") || "both"),
+    platforms: "google",
     logoText: String(fd.get("logoText") || "").trim() || undefined,
     barcodeMessage: String(fd.get("barcodeMessage") || "").trim() || undefined,
     recipientPhone: String(fd.get("recipientPhone") || "").trim() || undefined,
@@ -178,7 +177,6 @@ async function loadPasses() {
     actions.className = "pass-row-actions";
     actions.append(
       linkButton(pass.statusPagePath, "Open"),
-      linkButton(pass.appleDownloadPath, "Apple"),
       linkButton(`${pass.googleSavePath}?redirect=1`, "Google"),
     );
     if (pass.input.recipientPhone) {
@@ -220,16 +218,12 @@ function escapeHtml(value) {
 async function loadStatus() {
   const status = await api("/api/status");
   setupStatus.innerHTML = `
-    <div class="setup-block">
+    <div class="setup-block coming-soon">
       <h3>Apple Wallet</h3>
-      <p class="${status.apple.configured ? "ok" : "bad"}">
-        ${status.apple.configured ? "Configured" : "Needs setup"}
+      <p class="bad">Unavailable for now</p>
+      <p class="muted">
+        Apple Wallet configuration is unavailable for now and will be activated soon.
       </p>
-      ${
-        status.apple.missing?.length
-          ? `<ul>${status.apple.missing.map((m) => `<li>${escapeHtml(m)}</li>`).join("")}</ul>`
-          : `<p class="muted">Pass Type ID: ${escapeHtml(status.apple.passTypeIdentifier || "—")}</p>`
-      }
     </div>
     <div class="setup-block">
       <h3>Google Wallet</h3>
@@ -257,18 +251,15 @@ async function loadStatus() {
 
   envHelp.textContent = `PUBLIC_BASE_URL=${status.publicBaseUrl}
 
-# Apple Wallet
-APPLE_PASS_TYPE_ID=pass.com.your.company
-APPLE_TEAM_ID=XXXXXXXXXX
-APPLE_ORG_NAME=Your Org
-# Place PEM files in ./certs or set paths:
-# APPLE_WWDR_CERT_PATH / APPLE_SIGNER_CERT_PATH / APPLE_SIGNER_KEY_PATH
-# APPLE_SIGNER_KEY_PASSPHRASE=
-
-# Google Wallet
+# Google Wallet (active)
 GOOGLE_ISSUER_ID=3388xxxxxxxx
 GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 # or GOOGLE_SERVICE_ACCOUNT_KEY_PATH=/secrets/google.json
+
+# Apple Wallet — coming soon (not active yet)
+# APPLE_PASS_TYPE_ID=pass.com.your.company
+# APPLE_TEAM_ID=XXXXXXXXXX
+# APPLE_ORG_NAME=Your Org
 
 # SMS — Twilio or SMSAPI (PL)
 # SMS_PROVIDER=twilio
