@@ -1,15 +1,15 @@
 # LogisPass
 
-Issue **Apple Wallet** and **Google Wallet** passes for logistics parks and high-security restricted areas — create once, serve on iOS and Android.
+Issue **Google Wallet** passes for logistics parks and high-security restricted areas. Apple Wallet support is built in the codebase but **temporarily unavailable** and will be activated soon.
 
 ## Features
 
 - Web studio to design generic, coupon, event ticket, store/loyalty, and boarding / access passes
-- Signed Apple Wallet packages when Pass Type ID + certificates are configured
 - Google Wallet “Save to Wallet” links when Issuer ID + service account are configured
-- Public pass pages with Add to Apple / Add to Google buttons
+- Public pass pages with Add to Google Wallet
 - Optional SMS delivery of the pass page link (Twilio or SMSAPI)
 - Preview mode when credentials are missing (pass JSON still generated)
+- Apple Wallet signing is paused in the product UI/API until activation
 
 ## Quick start
 
@@ -21,6 +21,8 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000).
 
 ## Apple Wallet setup
+
+> **Coming soon.** Pass creation is limited to Google Wallet for now. Apple Wallet configuration is unavailable in the app and will be activated soon. The certificate steps below remain for when the feature is turned back on.
 
 1. In Apple Developer, create a **Pass Type ID**.
 2. Create a Pass Type certificate, export as `.p12`, then convert to PEM:
@@ -53,7 +55,7 @@ GOOGLE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'
 
 ## SMS setup
 
-When creating a pass, set `recipientPhone` (E.164 like `+48123456789`, or a 9-digit PL number). The server texts the public pass page URL (`/p/:id`) so the recipient can add Apple or Google Wallet from one link.
+When creating a pass, set `recipientPhone` (E.164 like `+48123456789`, or a 9-digit PL number). The server texts the public pass page URL (`/p/:id`) so the recipient can add the pass to Google Wallet.
 
 ### Twilio
 

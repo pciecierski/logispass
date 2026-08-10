@@ -32,19 +32,22 @@ async function main() {
   `;
 
   actions.innerHTML = "";
-  const apple = document.createElement("a");
-  apple.className = "btn primary";
-  apple.href = data.urls.apple;
-  apple.textContent = "Add to Apple Wallet";
   const google = document.createElement("a");
-  google.className = "btn secondary";
+  google.className = "btn primary";
   google.href = `${data.urls.google}?redirect=1`;
   google.textContent = "Add to Google Wallet";
-  actions.append(apple, google);
+  actions.append(google);
 
-  meta.textContent = `Serial ${pass.serialNumber} · Apple ${
-    pass.appleReady ? "ready" : "preview"
-  } · Google ${pass.googleReady ? "ready" : "preview"}`;
+  const appleNote = document.createElement("p");
+  appleNote.className = "availability-note";
+  appleNote.setAttribute("role", "status");
+  appleNote.innerHTML =
+    "Apple Wallet is unavailable for now and will be activated soon. Use Google Wallet to save this pass.";
+  actions.after(appleNote);
+
+  meta.textContent = `Serial ${pass.serialNumber} · Google ${
+    pass.googleReady ? "ready" : "preview"
+  } · Apple coming soon`;
 }
 
 function escapeHtml(value) {
