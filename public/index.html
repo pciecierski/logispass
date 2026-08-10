@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LogisPass — Wallet Pass Studio</title>
+    <title data-i18n="meta.title">LogisPass — Wallet Pass Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -16,27 +16,33 @@
     <div class="atmosphere" aria-hidden="true"></div>
     <header class="site-header">
       <a class="brand" href="/">LogisPass</a>
-      <nav>
-        <a href="#create">Create</a>
-        <a href="#passes">Passes</a>
-        <a href="#setup">Setup</a>
-      </nav>
+      <div class="header-tools">
+        <nav>
+          <a href="#create" data-i18n="nav.create">Create</a>
+          <a href="#passes" data-i18n="nav.passes">Passes</a>
+          <a href="#setup" data-i18n="nav.setup">Setup</a>
+        </nav>
+        <div class="lang-switch" role="group" data-i18n-aria-label="lang.label" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="pl" aria-pressed="false">PL</button>
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
     </header>
 
     <main>
       <section class="hero" id="top">
         <div class="hero-copy">
           <p class="brand-mark">LogisPass</p>
-          <h1>Access passes for logistics parks and secure sites.</h1>
-          <p class="lede">
+          <h1 data-i18n="hero.title">Access passes for logistics parks and secure sites.</h1>
+          <p class="lede" data-i18n="hero.lede">
             Design once. Issue Google Wallet passes for logistics parks and secure sites.
             Apple Wallet will be activated soon.
           </p>
           <div class="cta-row">
-            <a class="btn primary" href="#create">Create a Google Wallet pass</a>
-            <a class="btn ghost" href="#setup">Wallet status</a>
+            <a class="btn primary" href="#create" data-i18n="hero.ctaCreate">Create a Google Wallet pass</a>
+            <a class="btn ghost" href="#setup" data-i18n="hero.ctaStatus">Wallet status</a>
           </div>
-          <p class="availability-note" role="status">
+          <p class="availability-note" role="status" data-i18n="hero.availability" data-i18n-mode="html">
             Currently available: <strong>Google Wallet</strong>.
             Apple Wallet configuration is unavailable for now and will be activated soon.
           </p>
@@ -59,8 +65,8 @@
 
       <section class="panel" id="create">
         <div class="section-head">
-          <h2>Create</h2>
-          <p>
+          <h2 data-i18n="create.title">Create</h2>
+          <p data-i18n="create.lede">
             Publish a Google Wallet pass. Optionally SMS the pass page link to the recipient.
             Apple Wallet is not available yet.
           </p>
@@ -69,42 +75,59 @@
         <form id="pass-form" class="pass-form">
           <div class="field-grid">
             <label>
-              Organization
-              <input name="organizationName" required maxlength="120" placeholder="Harbor Market" />
+              <span data-i18n="form.organization">Organization</span>
+              <input
+                name="organizationName"
+                required
+                maxlength="120"
+                data-i18n-placeholder="form.organizationPh"
+                placeholder="Harbor Market"
+              />
             </label>
             <label>
-              Description
-              <input name="description" required maxlength="200" placeholder="Loyalty membership card" />
+              <span data-i18n="form.description">Description</span>
+              <input
+                name="description"
+                required
+                maxlength="200"
+                data-i18n-placeholder="form.descriptionPh"
+                placeholder="Loyalty membership card"
+              />
             </label>
             <label>
-              Pass style
+              <span data-i18n="form.style">Pass style</span>
               <select name="style">
-                <option value="generic">Generic</option>
-                <option value="coupon">Coupon</option>
-                <option value="eventTicket">Event ticket</option>
-                <option value="storeCard">Store / loyalty</option>
-                <option value="boardingPass">Boarding pass</option>
+                <option value="generic" data-i18n="form.style.generic">Generic</option>
+                <option value="coupon" data-i18n="form.style.coupon">Coupon</option>
+                <option value="eventTicket" data-i18n="form.style.eventTicket">Event ticket</option>
+                <option value="storeCard" data-i18n="form.style.storeCard">Store / loyalty</option>
+                <option value="boardingPass" data-i18n="form.style.boardingPass">Boarding pass</option>
               </select>
             </label>
             <label>
-              Platform
+              <span data-i18n="form.platform">Platform</span>
               <select name="platforms" disabled>
-                <option value="google" selected>Google Wallet only</option>
+                <option value="google" selected data-i18n="form.platform.google">Google Wallet only</option>
               </select>
             </label>
-            <p class="field-hint platform-hint">
+            <p class="field-hint platform-hint" data-i18n="form.platformHint">
               Apple Wallet configuration is unavailable for now and will be activated soon.
             </p>
             <label>
-              Logo text
+              <span data-i18n="form.logoText">Logo text</span>
               <input name="logoText" maxlength="40" placeholder="LogisPass" />
             </label>
             <label>
-              Barcode message
-              <input name="barcodeMessage" maxlength="256" placeholder="Auto-uses serial if empty" />
+              <span data-i18n="form.barcode">Barcode message</span>
+              <input
+                name="barcodeMessage"
+                maxlength="256"
+                data-i18n-placeholder="form.barcodePh"
+                placeholder="Auto-uses serial if empty"
+              />
             </label>
             <label>
-              Recipient phone (SMS)
+              <span data-i18n="form.phone">Recipient phone (SMS)</span>
               <input
                 name="recipientPhone"
                 type="tel"
@@ -115,53 +138,55 @@
             </label>
             <label class="checkbox-label">
               <input name="sendSms" type="checkbox" value="1" checked />
-              Send pass link by SMS
+              <span data-i18n="form.sendSms">Send pass link by SMS</span>
             </label>
             <label>
-              Background
+              <span data-i18n="form.background">Background</span>
               <input name="backgroundColor" type="color" value="#0B3D2E" />
             </label>
             <label>
-              Foreground
+              <span data-i18n="form.foreground">Foreground</span>
               <input name="foregroundColor" type="color" value="#F4EFE6" />
             </label>
           </div>
 
           <div class="style-extras" id="style-extras">
             <label class="extra coupon-only">
-              Discount
+              <span data-i18n="form.discount">Discount</span>
               <input name="discount" placeholder="20% off" />
             </label>
             <label class="extra event-only">
-              Event name
+              <span data-i18n="form.eventName">Event name</span>
               <input name="eventName" placeholder="Summer Solstice Show" />
             </label>
             <label class="extra event-only">
-              Venue
+              <span data-i18n="form.venue">Venue</span>
               <input name="venue" placeholder="Orchard Hall" />
             </label>
             <label class="extra store-only">
-              Balance
+              <span data-i18n="form.balance">Balance</span>
               <input name="balance" placeholder="$42.00" />
             </label>
             <label class="extra board-only">
-              Origin
+              <span data-i18n="form.origin">Origin</span>
               <input name="origin" placeholder="SFO" />
             </label>
             <label class="extra board-only">
-              Destination
+              <span data-i18n="form.destination">Destination</span>
               <input name="destination" placeholder="JFK" />
             </label>
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn primary" id="submit-btn">Publish pass</button>
+            <button type="submit" class="btn primary" id="submit-btn" data-i18n="form.submit">
+              Publish pass
+            </button>
             <p class="form-note" id="form-note" hidden></p>
           </div>
         </form>
 
         <div class="result" id="result" hidden>
-          <h3>Pass ready</h3>
+          <h3 data-i18n="result.title">Pass ready</h3>
           <p id="result-serial"></p>
           <div class="result-links" id="result-links"></div>
           <ul class="warnings" id="result-warnings"></ul>
@@ -170,25 +195,27 @@
 
       <section class="panel" id="passes">
         <div class="section-head">
-          <h2>Passes</h2>
-          <p>Recently published passes and their serve URLs.</p>
+          <h2 data-i18n="passes.title">Passes</h2>
+          <p data-i18n="passes.lede">Recently published passes and their serve URLs.</p>
         </div>
         <div id="pass-list" class="pass-list"></div>
       </section>
 
       <section class="panel" id="setup">
         <div class="section-head">
-          <h2>Setup</h2>
-          <p>Google Wallet credentials stay on the server. Attach a Railway volume at <code>/data</code> so passes survive deploys (no database needed).</p>
+          <h2 data-i18n="setup.title">Setup</h2>
+          <p data-i18n="setup.lede" data-i18n-mode="html">
+            Google Wallet credentials stay on the server. Attach a Railway volume at <code>/data</code> so passes survive deploys (no database needed).
+          </p>
         </div>
         <div class="setup-grid" id="setup-status">
           <div class="setup-block">
-            <h3>Apple Wallet</h3>
-            <p class="muted">Loading…</p>
+            <h3 data-i18n="setup.apple">Apple Wallet</h3>
+            <p class="muted">…</p>
           </div>
           <div class="setup-block">
-            <h3>Google Wallet</h3>
-            <p class="muted">Loading…</p>
+            <h3 data-i18n="setup.google">Google Wallet</h3>
+            <p class="muted">…</p>
           </div>
         </div>
         <pre class="env-help" id="env-help"></pre>
@@ -197,7 +224,7 @@
 
     <footer class="site-footer">
       <span>LogisPass</span>
-      <span>Google Wallet · Apple Wallet coming soon</span>
+      <span data-i18n="footer.tagline">Google Wallet · Apple Wallet coming soon</span>
     </footer>
     <script type="module" src="/app.js"></script>
   </body>
