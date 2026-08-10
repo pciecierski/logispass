@@ -90,6 +90,10 @@ export function createApiRouter(config: AppConfig, store: PassStore): Router {
         apple: `${config.publicBaseUrl}${pass.appleDownloadPath}`,
         google: `${config.publicBaseUrl}${pass.googleSavePath}`,
       },
+      wallets: {
+        apple: WALLET_FEATURES.appleEnabled,
+        google: WALLET_FEATURES.googleEnabled,
+      },
     });
   });
 

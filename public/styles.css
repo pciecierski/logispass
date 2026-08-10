@@ -542,6 +542,29 @@ input[type="color"] {
   margin-top: 1.5rem;
 }
 
+.device-hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.wallet-alt {
+  margin: 0.85rem 0 0;
+  font-size: 0.88rem;
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+}
+
+.wallet-alt a {
+  color: var(--moss);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.pass-page .cta-row {
+  margin-top: 0.25rem;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
