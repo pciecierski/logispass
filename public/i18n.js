@@ -297,8 +297,15 @@ export function applyDomTranslations(root = document) {
 
 /** Wire header language buttons inside `root`. */
 export function bindLanguageSwitch(root = document) {
-  root.querySelectorAll(".lang-switch [data-lang]").forEach((btn) => {
-    btn.addEventListener("click", () => {
+  root.querySelectorAll(".lang-switch").forEach((group) => {
+    if (group.dataset.langBound === "1") return;
+    group.dataset.langBound = "1";
+    group.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest("[data-lang]");
+      if (!btn || !group.contains(btn)) return;
+      event.preventDefault();
       const lang = btn.getAttribute("data-lang");
       if (lang === "pl" || lang === "en") setLocale(lang);
     });

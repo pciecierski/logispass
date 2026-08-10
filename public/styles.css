@@ -48,6 +48,8 @@ main,
 }
 
 .site-header {
+  position: relative;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -58,9 +60,10 @@ main,
 .header-tools {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 .brand {
@@ -70,11 +73,13 @@ main,
   color: var(--moss);
   text-decoration: none;
   letter-spacing: -0.02em;
+  flex-shrink: 0;
 }
 
 .site-header nav {
   display: flex;
   gap: 1.25rem;
+  flex-wrap: nowrap;
 }
 
 .site-header nav a {
@@ -82,6 +87,7 @@ main,
   text-decoration: none;
   font-size: 0.9rem;
   opacity: 0.8;
+  white-space: nowrap;
 }
 
 .site-header nav a:hover {
@@ -90,24 +96,31 @@ main,
 
 .lang-switch {
   display: inline-flex;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 21;
   border: 1px solid color-mix(in srgb, var(--moss) 28%, transparent);
   border-radius: var(--radius);
   overflow: hidden;
-  background: color-mix(in srgb, white 55%, transparent);
+  background: color-mix(in srgb, white 72%, transparent);
 }
 
 .lang-btn {
+  -webkit-appearance: none;
   appearance: none;
   border: 0;
   margin: 0;
-  padding: 0.45rem 0.7rem;
+  padding: 0.45rem 0.75rem;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  line-height: 1;
   color: color-mix(in srgb, var(--ink) 72%, transparent);
   background: transparent;
   cursor: pointer;
+  outline: none;
+  box-shadow: none;
 }
 
 .lang-btn + .lang-btn {
@@ -116,10 +129,22 @@ main,
 
 .lang-btn:hover {
   color: var(--moss);
+  background: color-mix(in srgb, var(--moss) 8%, transparent);
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--moss);
+  outline-offset: -2px;
+  z-index: 1;
 }
 
 .lang-btn.is-active {
   background: var(--moss);
+  color: #f4efe6;
+}
+
+.lang-btn.is-active:hover {
+  background: var(--moss-deep);
   color: #f4efe6;
 }
 
@@ -584,15 +609,26 @@ input[type="color"] {
     grid-template-columns: 1fr;
   }
 
-  .site-header nav {
-    gap: 0.85rem;
+  .site-header {
+    align-items: flex-start;
   }
 
-  .header-tools {
+  .site-header nav {
     gap: 0.75rem;
   }
 
+  .header-tools {
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .lang-switch {
+    order: -1;
+  }
+
   .lang-btn {
-    padding: 0.4rem 0.55rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 2.4rem;
   }
 }
