@@ -1,17 +1,21 @@
 {
-  "name": "LogisPass",
-  "install": "npm ci",
+  "name": "LogisPass + LogisYARD",
+  "install": "cd /agent/repos/logispass && npm ci\ncd /agent/repos/logisyard && npm install",
   "terminals": [
     {
-      "name": "dev-server",
-      "command": "npm run dev",
-      "description": "LogisPass dev server (tsx watch) serving the wallet pass studio and API on http://localhost:3000"
+      "name": "logispass",
+      "command": "cd /agent/repos/logispass && npm run dev",
+      "description": "LogisPass wallet-pass studio + API on http://localhost:3000 (tsx watch). Runs in preview mode until Google Wallet credentials are provided."
+    },
+    {
+      "name": "logisyard",
+      "command": "cd /agent/repos/logisyard && npm run dev",
+      "description": "LogisYARD API on http://localhost:3001 and Vite client on http://localhost:5173. Uses an in-memory store when DATABASE_URL is unset."
     }
   ],
   "ports": [
-    {
-      "name": "web",
-      "port": 3000
-    }
+    { "name": "logispass-web", "port": 3000 },
+    { "name": "logisyard-api", "port": 3001 },
+    { "name": "logisyard-web", "port": 5173 }
   ]
 }
