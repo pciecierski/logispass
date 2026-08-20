@@ -82,16 +82,109 @@ main,
   flex-wrap: nowrap;
 }
 
-.site-header nav a {
+.site-header nav a,
+.site-header nav .header-link {
   color: var(--ink);
   text-decoration: none;
   font-size: 0.9rem;
   opacity: 0.8;
   white-space: nowrap;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
-.site-header nav a:hover {
+.site-header nav a:hover,
+.site-header nav .header-link:hover {
   opacity: 1;
+}
+
+.header-link-strong {
+  opacity: 1;
+  font-weight: 600;
+  color: var(--moss);
+}
+
+.auth-user {
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  white-space: nowrap;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-nav {
+  display: flex;
+  justify-content: center;
+  padding: 0 clamp(1.25rem, 4vw, 3rem) 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--moss) 12%, transparent);
+}
+
+.studio-nav nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.75rem;
+  padding: 1.15rem 0;
+}
+
+.studio-nav a {
+  color: var(--moss);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.studio-nav a:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.auth-page {
+  padding: 1rem 0 3rem;
+}
+
+.auth-panel {
+  max-width: 32rem;
+  margin: 0 auto;
+  border-top: none;
+}
+
+.auth-panel h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  margin: 0 0 0.75rem;
+  color: var(--moss);
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.auth-form .btn {
+  justify-self: start;
+  margin-top: 0.35rem;
+}
+
+.auth-switch {
+  margin-top: 1.25rem;
+}
+
+.auth-switch a {
+  color: var(--moss);
+  font-weight: 500;
+}
+
+.error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.9rem;
 }
 
 .lang-switch {

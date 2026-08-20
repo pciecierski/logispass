@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="content-language" content="pl" />
+    <title data-i18n="auth.register.meta">Zarejestruj · LogisPass</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script
+      defer
+      src="https://analityka.dcsandbox.dev/script.js"
+      data-website-id="cb85f5da-4233-4fed-8d88-ee3085c38281"
+    ></script>
+  </head>
+  <body class="auth-body">
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="/">LogisPass</a>
+      <div class="header-tools">
+        <nav data-auth-nav aria-label="Konto"></nav>
+        <div class="lang-switch" role="group" data-i18n-aria-label="lang.label" aria-label="Język">
+          <button type="button" class="lang-btn" data-lang="pl" aria-pressed="false">PL</button>
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="auth-page">
+      <section class="panel auth-panel">
+        <h1 data-i18n="auth.register.title">Zarejestruj konto</h1>
+        <div id="register-done" hidden>
+          <p id="register-message"></p>
+          <p class="muted" id="register-email-ok" hidden></p>
+          <p class="error" id="register-email-err" hidden></p>
+          <p class="muted" id="register-preview" hidden></p>
+          <p class="muted auth-switch">
+            <a href="/zaloguj" data-i18n="auth.goLogin">Przejdź do logowania</a>
+          </p>
+        </div>
+        <div id="register-form-wrap">
+          <p class="muted" data-i18n="auth.register.lede">
+            Po rejestracji wyślemy e-mail z potwierdzeniem i jednorazowym linkiem do utworzenia hasła.
+          </p>
+          <form id="register-form" class="auth-form">
+            <label>
+              <span data-i18n="auth.firstName">Imię</span>
+              <input name="firstName" required maxlength="80" autocomplete="given-name" />
+            </label>
+            <label>
+              <span data-i18n="auth.lastName">Nazwisko</span>
+              <input name="lastName" required maxlength="80" autocomplete="family-name" />
+            </label>
+            <label>
+              <span data-i18n="auth.company">Firma</span>
+              <input name="company" required maxlength="120" autocomplete="organization" />
+            </label>
+            <label>
+              <span data-i18n="auth.location">Nazwa lokalizacji</span>
+              <input
+                name="locationName"
+                required
+                maxlength="120"
+                autocomplete="off"
+                data-i18n-placeholder="auth.locationPh"
+                placeholder="musi być unikalna"
+              />
+            </label>
+            <label>
+              <span data-i18n="auth.email">E-mail</span>
+              <input name="email" type="email" required maxlength="200" autocomplete="email" />
+            </label>
+            <p class="error" id="register-error" hidden></p>
+            <button type="submit" class="btn primary" id="register-submit" data-i18n="auth.register.submit">
+              Utwórz konto
+            </button>
+          </form>
+          <p class="muted auth-switch">
+            <span data-i18n="auth.haveAccount">Masz już konto?</span>
+            <a href="/zaloguj" data-i18n="nav.login">Zaloguj</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { initI18n, t, applyDomTranslations } from "./i18n.js";
+      import { authApi, bindAuthHeader } from "./auth.js";
+
+      initI18n();
+      await bindAuthHeader();
+      applyDomTranslations(document);
+
+      const form = document.getElementById("register-form");
+      const formWrap = document.getElementById("register-form-wrap");
+      const done = document.getElementById("register-done");
+      const errorEl = document.getElementById("register-error");
+      const submitBtn = document.getElementById("register-submit");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorEl.hidden = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = t("auth.register.busy");
+        const fd = new FormData(form);
+        try {
+          const res = await authApi("/api/auth/register", {
+            method: "POST",
+            body: JSON.stringify({
+              firstName: fd.get("firstName"),
+              lastName: fd.get("lastName"),
+              company: fd.get("company"),
+              locationName: fd.get("locationName"),
+              email: fd.get("email"),
+            }),
+          });
+          formWrap.hidden = true;
+          done.hidden = false;
+          document.getElementById("register-message").textContent = res.message;
+          const ok = document.getElementById("register-email-ok");
+          const err = document.getElementById("register-email-err");
+          const preview = document.getElementById("register-preview");
+          if (res.emailSent) {
+            ok.hidden = false;
+            ok.replaceChildren(
+              document.createTextNode(`${t("auth.register.sentPrefix")} `),
+            );
+            const strong = document.createElement("strong");
+            strong.textContent = res.email;
+            ok.append(strong);
+            ok.append(document.createTextNode(`. ${t("auth.register.sentSuffix")}`));
+            err.hidden = true;
+          } else {
+            ok.hidden = true;
+            err.hidden = false;
+            err.textContent =
+              res.emailError || t("auth.register.emailFailed");
+          }
+          if (res.previewSetupUrl) {
+            preview.hidden = false;
+            preview.replaceChildren(document.createTextNode(`${t("auth.register.preview")} `));
+            const link = document.createElement("a");
+            link.href = res.previewSetupUrl;
+            link.textContent = t("auth.setPassword");
+            preview.append(link);
+          }
+        } catch (err) {
+          errorEl.hidden = false;
+          errorEl.textContent = err instanceof Error ? err.message : t("auth.register.failed");
+          submitBtn.disabled = false;
+          submitBtn.textContent = t("auth.register.submit");
+        }
+      });
+    </script>
+  </body>
+</html>

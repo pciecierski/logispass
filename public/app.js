@@ -1,4 +1,5 @@
-import { initI18n, onLocaleChange, t, getLocale } from "./i18n.js";
+import { initI18n, onLocaleChange, t, getLocale, applyDomTranslations } from "./i18n.js";
+import { bindAuthHeader } from "./auth.js";
 
 const form = document.getElementById("pass-form");
 const extras = document.getElementById("style-extras");
@@ -21,6 +22,7 @@ let lastPasses = null;
 let lastResult = null;
 
 initI18n();
+bindAuthHeader().then(() => applyDomTranslations(document));
 
 function syncExtras() {
   extras.className = `style-extras show-${styleSelect.value}`;
