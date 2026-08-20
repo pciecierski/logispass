@@ -43,6 +43,10 @@ app.use(
     setHeaders(res, filePath) {
       if (filePath.endsWith(".html")) {
         res.setHeader("Content-Language", "pl");
+        res.setHeader("Cache-Control", "no-cache");
+      } else if (filePath.endsWith(".js") || filePath.endsWith(".css")) {
+        // Avoid long CDN caches that serve stale i18n.js against newer HTML.
+        res.setHeader("Cache-Control", "public, max-age=60, must-revalidate");
       }
     },
   }),

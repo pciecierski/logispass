@@ -404,6 +404,13 @@ export function applyDomTranslations(root = document) {
     if (!key) return;
     const mode = el.getAttribute("data-i18n-mode") || "text";
     const value = t(key);
+    // Missing key → t() returns the key. Keep authored HTML fallback (helps when
+    // a CDN still serves a stale i18n.js after deploy).
+    if (value === key) {
+      const existing =
+        mode === "html" ? el.innerHTML.trim() : (el.textContent || "").trim();
+      if (existing && existing !== key) return;
+    }
     if (mode === "html") el.innerHTML = value;
     else el.textContent = value;
   });
@@ -411,7 +418,9 @@ export function applyDomTranslations(root = document) {
   root.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     const key = el.getAttribute("data-i18n-placeholder");
     if (!key || !("placeholder" in el)) return;
-    el.placeholder = t(key);
+    const value = t(key);
+    if (value === key && el.placeholder && el.placeholder !== key) return;
+    el.placeholder = value;
   });
 
   root.querySelectorAll("[data-i18n-title]").forEach((el) => {
