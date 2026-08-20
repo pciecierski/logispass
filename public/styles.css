@@ -177,7 +177,7 @@ main,
 }
 
 .lede {
-  max-width: 36ch;
+  max-width: 48ch;
   margin: 0 0 1.75rem;
   color: color-mix(in srgb, var(--ink) 78%, transparent);
   animation: rise 1s ease 0.16s both;
@@ -480,6 +480,11 @@ input[type="color"] {
   margin: 0.2rem 0 0;
   font-size: 0.85rem;
   color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.pass-expiry {
+  color: #c62828 !important;
+  font-weight: 600;
 }
 
 .pass-row-actions {

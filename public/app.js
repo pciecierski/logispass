@@ -187,12 +187,24 @@ function renderPasses(data) {
   }
   const locale = getLocale() === "pl" ? "pl-PL" : "en-GB";
   for (const pass of data.passes) {
+    const created = new Date(pass.createdAt).toLocaleString(locale);
+    const expiresAt = pass.expiresAt
+      ? pass.expiresAt
+      : new Date(new Date(pass.createdAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const expiresLabel = new Date(expiresAt).toLocaleString(locale, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const row = document.createElement("div");
     row.className = "pass-row";
     row.innerHTML = `
       <div>
         <h3>${escapeHtml(pass.input.organizationName)} · ${escapeHtml(pass.input.style)}</h3>
-        <p>${escapeHtml(pass.serialNumber)} · ${new Date(pass.createdAt).toLocaleString(locale)}</p>
+        <p>${escapeHtml(pass.serialNumber)} · ${escapeHtml(created)}</p>
+        <p class="pass-expiry">${escapeHtml(t("passes.validUntil", { when: expiresLabel }))}</p>
       </div>
     `;
     const actions = document.createElement("div");
