@@ -57,11 +57,15 @@
               <input name="lastName" required maxlength="80" autocomplete="family-name" />
             </label>
             <label>
-              <span data-i18n="auth.company">Firma</span>
+              <span data-i18n="auth.company">Firma/Organizacja</span>
               <input name="company" required maxlength="120" autocomplete="organization" />
+              <p class="field-notice" data-i18n="auth.companyHint">
+                Podaj poprawną nazwę firmy/organizacja. Ta nazwa będzie elementem widocznym na każdej generowanej
+                przepustce.
+              </p>
             </label>
             <label>
-              <span data-i18n="auth.location">Nazwa lokalizacji</span>
+              <span data-i18n="auth.location">Nazwa Lokalizacji/ nazwa Parku Logistycznego</span>
               <input
                 name="locationName"
                 required
@@ -70,6 +74,10 @@
                 data-i18n-placeholder="auth.locationPh"
                 placeholder="musi być unikalna"
               />
+              <p class="field-notice" data-i18n="auth.locationHint">
+                Podaj poprawną i rozpoznawalną nazwę lokalizacji/parku. Ta nazwa będzie elementem widocznym na każdej
+                przepustce
+              </p>
             </label>
             <label>
               <span data-i18n="auth.email">E-mail</span>

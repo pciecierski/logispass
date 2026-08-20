@@ -172,6 +172,14 @@ main,
   margin-top: 0.35rem;
 }
 
+.auth-form .field-notice {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+}
+
 .auth-switch {
   margin-top: 1.25rem;
 }
