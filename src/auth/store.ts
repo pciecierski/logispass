@@ -39,6 +39,7 @@ export function createAuthStore(dataDir: string): AuthStore {
   let snapshot = loadSnapshot(filePath);
 
   function persist() {
+    fs.mkdirSync(authDir, { recursive: true });
     const tmp = `${filePath}.${process.pid}.tmp`;
     fs.writeFileSync(tmp, JSON.stringify(snapshot, null, 2), "utf8");
     fs.renameSync(tmp, filePath);
