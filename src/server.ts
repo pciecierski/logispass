@@ -1,6 +1,8 @@
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createAuthRouter } from "./auth/routes.js";
+import { createAuthStore } from "./auth/store.js";
 import { loadConfig } from "./config.js";
 import { PassStore } from "./passes/store.js";
 import { createApiRouter } from "./routes/api.js";
@@ -8,6 +10,7 @@ import { createApiRouter } from "./routes/api.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const config = loadConfig();
 const store = new PassStore(config.dataDir);
+const authStore = createAuthStore(config.dataDir);
 
 const app = express();
 app.disable("x-powered-by");
@@ -15,7 +18,7 @@ app.use(express.json({ limit: "1mb" }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PATCH,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") {
     res.status(204).end();
@@ -25,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", createApiRouter(config, store));
+app.use("/api/auth", createAuthRouter(authStore, config.publicBaseUrl));
 
 const publicDir = path.join(__dirname, "..", "public");
 
@@ -46,6 +50,19 @@ app.use(
 
 app.get("/p/:id", (_req, res) => {
   sendHtml(res, path.join(publicDir, "pass.html"));
+});
+
+app.get(["/zarejestruj", "/zaloguj", "/przypomnij-haslo"], (req, res) => {
+  const map: Record<string, string> = {
+    "/zarejestruj": "register.html",
+    "/zaloguj": "login.html",
+    "/przypomnij-haslo": "forgot-password.html",
+  };
+  sendHtml(res, path.join(publicDir, map[req.path]));
+});
+
+app.get("/ustaw-haslo/:token", (_req, res) => {
+  sendHtml(res, path.join(publicDir, "set-password.html"));
 });
 
 app.get("/{*splat}", (req, res, next) => {

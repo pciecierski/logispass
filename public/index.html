@@ -26,10 +26,9 @@
     <header class="site-header">
       <a class="brand" href="/">LogisPass</a>
       <div class="header-tools">
-        <nav>
-          <a href="#create" data-i18n="nav.create">Utwórz</a>
-          <a href="#passes" data-i18n="nav.passes">Przepustki</a>
-          <a href="#setup" data-i18n="nav.setup">Konfiguracja</a>
+        <nav data-auth-nav aria-label="Konto">
+          <a href="/zarejestruj" class="header-link" data-i18n="nav.register">Zarejestruj</a>
+          <a href="/zaloguj" class="header-link header-link-strong" data-i18n="nav.login">Zaloguj</a>
         </nav>
         <div class="lang-switch" role="group" data-i18n-aria-label="lang.label" aria-label="Język">
           <button type="button" class="lang-btn" data-lang="pl" aria-pressed="false">PL</button>
@@ -71,6 +70,14 @@
           </div>
         </div>
       </section>
+
+      <div class="studio-nav" id="studio">
+        <nav aria-label="Studio">
+          <a href="#create" data-i18n="nav.create">Utwórz</a>
+          <a href="#passes" data-i18n="nav.passes">Przepustki</a>
+          <a href="#setup" data-i18n="nav.setup">Konfiguracja</a>
+        </nav>
+      </div>
 
       <section class="panel" id="create">
         <div class="section-head">

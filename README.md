@@ -101,6 +101,14 @@ For local testing without a real gateway: `SMS_PROVIDER=log` (message is printed
 | `GET` | `/api/passes/:id/apple.pkpass` | Download Apple pass |
 | `GET` | `/api/passes/:id/google?redirect=1` | Redirect to Google save URL |
 | `GET` | `/p/:id` | Public pass landing page |
+| `POST` | `/api/auth/register` | Create account (SendGrid setup email) |
+| `POST` | `/api/auth/login` | Log in (session cookie) |
+| `POST` | `/api/auth/logout` | Log out |
+| `GET` | `/api/auth/me` | Current session |
+| `POST` | `/api/auth/forgot-password` | Password reset email |
+| `GET/POST` | `/api/auth/password-setup/:token` | Set / reset password |
+
+Auth pages: `/zarejestruj`, `/zaloguj`, `/przypomnij-haslo`, `/ustaw-haslo/:token`. Accounts are stored under `DATA_DIR/auth` (same volume as passes). Registration emails use SendGrid (`SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL`) — the same relay pattern as LogisYARD.
 
 ## Deploy (Railway)
 
