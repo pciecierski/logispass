@@ -147,8 +147,12 @@ const messages = {
     "auth.setPassword.failed": "Could not set password",
     "auth.firstName": "First name",
     "auth.lastName": "Last name",
-    "auth.company": "Company",
-    "auth.location": "Location name",
+    "auth.company": "Company / Organization",
+    "auth.companyHint":
+      "Enter the correct company/organization name. This name will appear on every generated pass.",
+    "auth.location": "Location name / logistics park name",
+    "auth.locationHint":
+      "Enter a correct, recognizable location/park name. This name will appear on every pass.",
     "auth.locationPh": "must be unique",
     "auth.email": "Email",
     "auth.password": "Password",
@@ -307,8 +311,12 @@ const messages = {
     "auth.setPassword.failed": "Nie udało się ustawić hasła",
     "auth.firstName": "Imię",
     "auth.lastName": "Nazwisko",
-    "auth.company": "Firma",
-    "auth.location": "Nazwa lokalizacji",
+    "auth.company": "Firma/Organizacja",
+    "auth.companyHint":
+      "Podaj poprawną nazwę firmy/organizacja. Ta nazwa będzie elementem widocznym na każdej generowanej przepustce.",
+    "auth.location": "Nazwa Lokalizacji/ nazwa Parku Logistycznego",
+    "auth.locationHint":
+      "Podaj poprawną i rozpoznawalną nazwę lokalizacji/parku. Ta nazwa będzie elementem widocznym na każdej przepustce",
     "auth.locationPh": "musi być unikalna",
     "auth.email": "E-mail",
     "auth.password": "Hasło",
