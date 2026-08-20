@@ -9,16 +9,17 @@ const messages = {
     "nav.passes": "Passes",
     "nav.setup": "Setup",
     "lang.label": "Language",
+    "hero.brand": "LogisPass try it…",
     "hero.title": "Access passes for logistics parks and secure sites.",
     "hero.lede":
-      "Design once. Issue Google Wallet passes for logistics parks and secure sites. Apple Wallet will be activated soon.",
+      "Create test passes for a logistics park or other restricted-access sites — we’ll send them to the intended recipient.",
     "hero.ctaCreate": "Create a Google Wallet pass",
     "hero.ctaStatus": "Wallet status",
     "hero.availability":
       "Currently available: <strong>Google Wallet</strong>. Apple Wallet configuration is unavailable for now and will be activated soon.",
     "create.title": "Create",
     "create.lede":
-      "Publish a Google Wallet pass. Optionally SMS the pass page link to the recipient. Apple Wallet is not available yet.",
+      "Create and publish a test Google Wallet pass. Optionally send an SMS link straight to the recipient. Apple Wallet is not available yet. When you’ve tested enough and are ready to see more, create a user account.",
     "form.organization": "Organization",
     "form.organizationPh": "Harbor Market",
     "form.description": "Description",
@@ -63,6 +64,7 @@ const messages = {
     "passes.sms": "SMS",
     "passes.smsSent": "Sent",
     "passes.smsTitle": "Send link to {{phone}}",
+    "passes.validUntil": "Pass valid until: {{when}}",
     "setup.title": "Setup",
     "setup.lede":
       "Google Wallet credentials stay on the server. Attach a Railway volume at <code>/data</code> so passes survive deploys (no database needed).",
@@ -109,16 +111,17 @@ const messages = {
     "nav.passes": "Przepustki",
     "nav.setup": "Konfiguracja",
     "lang.label": "Język",
+    "hero.brand": "LogisPass wypróbuj…",
     "hero.title": "Przepustki na park logistyczny i tereny chronione.",
     "hero.lede":
-      "Zaprojektuj raz. Wystawiaj przepustki Google Wallet dla parków logistycznych i stref zamkniętych. Apple Wallet uruchomimy wkrótce.",
+      "Utwórz testowe przepustki na park logistyczny lub inne obiekty z ograniczonym dostępem, wyślemy je do docelowego odbiorcy.",
     "hero.ctaCreate": "Utwórz przepustkę Google Wallet",
     "hero.ctaStatus": "Status walletów",
     "hero.availability":
       "Dostępne teraz: <strong>Google Wallet</strong>. Konfiguracja Apple Wallet jest na razie niedostępna i zostanie aktywowana wkrótce.",
     "create.title": "Utwórz",
     "create.lede":
-      "Opublikuj przepustkę Google Wallet. Opcjonalnie wyślij link SMS do odbiorcy. Apple Wallet nie jest jeszcze dostępny.",
+      "Utwórz i opublikuj testową przepustkę Google Wallet. Opcjonalnie możesz też wysłać link SMS od razu do odbiorcy. Apple Wallet nie jest jeszcze dostępny. Kiedy przetestujesz i będziesz już gotów zobaczyć więcej, załóż konto użytkownika.",
     "form.organization": "Organizacja",
     "form.organizationPh": "Harbor Market",
     "form.description": "Opis",
@@ -163,6 +166,7 @@ const messages = {
     "passes.sms": "SMS",
     "passes.smsSent": "Wysłano",
     "passes.smsTitle": "Wyślij link na {{phone}}",
+    "passes.validUntil": "Przepustka ważna do: {{when}}",
     "setup.title": "Konfiguracja",
     "setup.lede":
       "Dane Google Wallet zostają na serwerze. Podłącz volume Railway pod <code>/data</code>, żeby przepustki przetrwały deploye (bez bazy danych).",

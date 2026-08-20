@@ -59,6 +59,8 @@ export interface StoredPass {
   serialNumber: string;
   createdAt: string;
   updatedAt: string;
+  /** ISO timestamp — test passes expire exactly 7 days after creation. */
+  expiresAt: string;
   input: CreatePassInput;
   appleReady: boolean;
   googleReady: boolean;

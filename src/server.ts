@@ -57,6 +57,7 @@ app.get("/{*splat}", (req, res, next) => {
 });
 
 app.listen(config.port, () => {
+  const purged = store.purgeExpired();
   console.log(`LogisPass server listening on :${config.port}`);
   console.log(`Public base URL: ${config.publicBaseUrl}`);
   console.log(
@@ -65,4 +66,16 @@ app.listen(config.port, () => {
   console.log(
     `Google Wallet: ${config.google.enabled ? "enabled" : "needs credentials"} · Apple Wallet: coming soon`,
   );
+  if (purged > 0) {
+    console.log(`Purged ${purged} expired test pass(es)`);
+  }
 });
+
+/** Periodically drop expired test passes (TTL = 7 days). */
+const PURGE_INTERVAL_MS = 60 * 60 * 1000;
+setInterval(() => {
+  const purged = store.purgeExpired();
+  if (purged > 0) {
+    console.log(`Purged ${purged} expired test pass(es)`);
+  }
+}, PURGE_INTERVAL_MS).unref();
